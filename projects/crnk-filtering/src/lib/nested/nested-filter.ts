@@ -1,7 +1,7 @@
 import { HttpParams } from '@angular/common/http';
 import { FilterSpec } from '../FilterSpec';
 import { filterArray } from '../utils/array-helper-functions';
-import { NestingOperator } from '../utils/crnk-operators';
+import { NestingOperator, NestingOperatorType } from '../utils/crnk-operators';
 
 /**
  * 	 Represents a instance for creating filter string and applying sorting.
@@ -9,18 +9,18 @@ import { NestingOperator } from '../utils/crnk-operators';
 export class NestedFilter {
   private sort: string | null;
   public filterSpecs: Array<FilterSpec>;
-  private nestingCondition: string;
+  private nestingCondition: NestingOperatorType;
   private innerNestedFilter: string | null;
 
   /**
    *
    * @param filterSpecs - Array of FilterSpec's by which filter string is created.
-   * @param overallCondition - Optional, conditional operator (`AND`, `OR`, `NOT`) which wraps the whole filter string.
+   * @param nestingCondition - Optional, conditional operator (`AND`, `OR`, `NOT`) which wraps the whole filter string.
    * @param innerNestedFilter - Optional, used in caste of nesting `AND`, `OR`, `NOT` operators.
    */
   public constructor(
     filterSpecs: FilterSpec | Array<FilterSpec>,
-    nestingCondition?: string,
+    nestingCondition?: NestingOperatorType,
     innerNestedFilter?: string
   ) {
     this.sort = null;
@@ -32,7 +32,7 @@ export class NestedFilter {
     this.filterSpecs = filterArray(filterSpecs);
 
     this.nestingCondition = nestingCondition
-      ? nestingCondition.toUpperCase()
+      ? nestingCondition
       : NestingOperator.And;
 
     this.innerNestedFilter = innerNestedFilter ? innerNestedFilter : null;

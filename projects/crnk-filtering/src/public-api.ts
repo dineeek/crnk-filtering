@@ -3,6 +3,6 @@
  */
 
 export * from './lib/FilterSpec';
-export * from './lib/basic/BasicFilter';
-export * from './lib/nested/NestedFilter';
+export * from './lib/basic/basic-filter';
+export * from './lib/nested/nested-filter';
 export * from './lib/utils/crnk-operators';

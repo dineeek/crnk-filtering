@@ -2,7 +2,7 @@ import {
   isArrayFullOfEmptyStrings,
   isArrayFullOfStrings,
 } from './utils/array-helper-functions';
-import { FilterOperator } from './utils/crnk-operators';
+import { FilterOperator, FilterOperatorType } from './utils/crnk-operators';
 
 export class FilterSpec {
   public pathSpec: string;
@@ -21,13 +21,11 @@ export class FilterSpec {
   public constructor(
     filterPathSpec: string,
     filterValue: any,
-    filterOperator?: string
+    filterOperator?: FilterOperatorType
   ) {
     this.pathSpec = filterPathSpec;
     this.value = filterValue;
-    this.operator = filterOperator
-      ? filterOperator.toUpperCase()
-      : FilterOperator.Equals;
+    this.operator = filterOperator ? filterOperator : FilterOperator.Equals;
     this.relationPathAttributes = [];
   }
 

@@ -2,30 +2,27 @@ import { FilterSpec } from '../FilterSpec';
 import compact from 'lodash.compact';
 
 /**
- * Method `filterArray` allows you to filter the whole given array in constructor.
- * It works by rejecting all filters type which does not meet certain criteria and returns filtered array.
+ * Method `filterArray` returns array with filters which does not meet needed criteria.
  *
- * @param filterTypeArray - Array of FilterSpec which values goes through filtering.
+ * @param filterSpecs - Array of FilterSpec which values goes through filtering.
  */
-export function filterArray(
-  filterTypeArray: Array<FilterSpec>
-): Array<FilterSpec> {
-  const filteredArray = filterTypeArray.filter((filterType) => {
-    if (filterType.value instanceof Array) {
-      filterType.value = compact(filterType.value); // Lodash compact method - removes null, undefined and '' from an array
-      if (isArrayFullOfStrings(filterType.value)) {
+export function filterArray(filterSpecs: Array<FilterSpec>): Array<FilterSpec> {
+  const filteredArray = filterSpecs.filter((filterSpec) => {
+    if (filterSpec.value instanceof Array) {
+      filterSpec.value = compact(filterSpec.value); // Lodash compact method - removes null, undefined and '' from an array
+      if (isArrayFullOfStrings(filterSpec.value)) {
         // Trimming strings if they exists in array
-        filterType.value = compact(getTrimmedStringsArray(filterType.value));
-      } else if (isArrayContainingString(filterType.value)) {
-        filterType.value = compact(trimStringsInsideArray(filterType.value));
+        filterSpec.value = compact(getTrimmedStringsArray(filterSpec.value));
+      } else if (isArrayContainingString(filterSpec.value)) {
+        filterSpec.value = compact(trimStringsInsideArray(filterSpec.value));
       }
-    } else if (typeof filterType.value === 'string') {
+    } else if (typeof filterSpec.value === 'string') {
       // Trimming single string value
-      const trimmedValue = filterType.value.trim();
-      filterType.value = trimmedValue.length ? trimmedValue : null;
+      const trimmedValue = filterSpec.value.trim();
+      filterSpec.value = trimmedValue.length ? trimmedValue : null;
     }
 
-    return filterType.isValid() ? filterType : null;
+    return filterSpec.isValid() ? filterSpec : null;
   });
 
   return filteredArray;

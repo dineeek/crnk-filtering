@@ -1,6 +1,6 @@
 import { FilterSpec } from '../FilterSpec';
 import { FilterOperator } from '../utils/crnk-operators';
-import { BasicFilter } from './BasicFilter';
+import { BasicFilter } from './basic-filter';
 
 describe('Basic-filtering', () => {
   it('should be create string with one filter', () => {
@@ -28,10 +28,10 @@ describe('Basic-filtering', () => {
 
   it('should not create filter string with null, undefined and empty values', () => {
     const filterArray = [
-      new FilterSpec('user.name', '    ', 'LIKE'),
-      new FilterSpec('user.number', '', 'EQ'),
-      new FilterSpec('user.address.city', null, 'EQ'),
-      new FilterSpec('user.address.zip', undefined, 'EQ'),
+      new FilterSpec('user.name', '    ', FilterOperator.Like),
+      new FilterSpec('user.number', '', FilterOperator.Equals),
+      new FilterSpec('user.address.city', null, FilterOperator.Equals),
+      new FilterSpec('user.address.zip', undefined, FilterOperator.Equals),
     ];
     const basicFilter = new BasicFilter(filterArray).getHttpParams();
 
@@ -40,10 +40,10 @@ describe('Basic-filtering', () => {
 
   it('should recognize empty and non empty filter values', () => {
     const filterArray = [
-      new FilterSpec('user.name', '    ', 'LIKE'),
-      new FilterSpec('user.number', '132312', 'EQ'),
-      new FilterSpec('user.address.city', null, 'EQ'),
-      new FilterSpec('user.address.zip', 32115, 'EQ'),
+      new FilterSpec('user.name', '    ', FilterOperator.Like),
+      new FilterSpec('user.number', '132312', FilterOperator.Equals),
+      new FilterSpec('user.address.city', null, FilterOperator.Equals),
+      new FilterSpec('user.address.zip', 32115, FilterOperator.Equals),
     ];
     const basicFilter = new BasicFilter(filterArray).getHttpParams();
 
@@ -54,17 +54,17 @@ describe('Basic-filtering', () => {
 
   it('should work with filter values in array', () => {
     const filterArray = [
-      new FilterSpec('user.name', '    ', 'LIKE'),
+      new FilterSpec('user.name', '    ', FilterOperator.Like),
       new FilterSpec(
         'user.number',
         [13513, undefined, 23151, , 21512, null],
-        'EQ'
+        FilterOperator.Equals
       ),
       new FilterSpec('user.address.city', ['Zurich', 'Ljubljana', 'Novi Sad']),
       new FilterSpec(
         'user.address.street',
         ['Gustav     ', 'Kaiser', '  StraĂźe '],
-        'LIKE'
+        FilterOperator.Like
       ),
     ];
     const basicFilter = new BasicFilter(filterArray).getHttpParams();

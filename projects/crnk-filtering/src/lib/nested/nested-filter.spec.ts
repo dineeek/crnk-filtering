@@ -1,9 +1,9 @@
 import { FilterSpec } from '../FilterSpec';
 import { FilterOperator, NestingOperator } from '../utils/crnk-operators';
-import { NestedFilter } from './NestedFilter';
+import { NestedFilter } from './nested-filter';
 
 const filterArrayUser = [
-  new FilterSpec('user.number', '30000', 'GE'),
+  new FilterSpec('user.number', '30000', FilterOperator.GreaterOrEquals),
   new FilterSpec('user.name', 'Emil', FilterOperator.Like),
   new FilterSpec('user.contact.email', 'Emil@', FilterOperator.Like),
 ];
@@ -44,7 +44,10 @@ describe('Nested-filtering', () => {
   });
 
   it('should be create nested filter inside another filter string', () => {
-    const genericFilterDealer = new NestedFilter(filterArrayUser, 'AND');
+    const genericFilterDealer = new NestedFilter(
+      filterArrayUser,
+      NestingOperator.And
+    );
     const genericFilterBrand = new NestedFilter(
       filterArrayClient,
       NestingOperator.Or,
@@ -68,7 +71,7 @@ describe('Nested-filtering', () => {
     );
     const genericFilterUser = new NestedFilter(
       filterArray,
-      'AND',
+      NestingOperator.And,
       genericFilterClient.buildFilterString()
     ).getHttpParams();
 
@@ -116,7 +119,7 @@ describe('Nested-filtering', () => {
     // empty
     const nestedFilterUsers = new NestedFilter(
       filterArrayUsers,
-      'AND',
+      NestingOperator.And,
       nestedFilterClient.buildFilterString()
     ).getHttpParams();
 
