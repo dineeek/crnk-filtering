@@ -3,6 +3,17 @@ import { FilterOperator } from '../utils/crnk-operators';
 import { BasicFilter } from './BasicFilter';
 
 describe('Basic-filtering', () => {
+  it('should be create string with one filter', () => {
+    const filterArray = [
+      new FilterSpec('user.name', 'Auto', FilterOperator.Like),
+    ];
+    const basicFilter = new BasicFilter(filterArray).getHttpParams();
+
+    expect(decodeURI(basicFilter.toString())).toBe(
+      'filter[user.name][LIKE]=Auto%'
+    );
+  });
+
   it('should be create string with two filters', () => {
     const filterArray = [
       new FilterSpec('user.name', 'Auto', FilterOperator.Like),

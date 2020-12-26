@@ -13,8 +13,13 @@ export class BasicFilter {
    *
    * @param filterSpecs - Array of FilterSpec's by which filter string is created.
    */
-  public constructor(filterSpecs: Array<FilterSpec>) {
+  public constructor(filterSpecs: FilterSpec | Array<FilterSpec>) {
     this.sort = null;
+
+    filterSpecs =
+      filterSpecs instanceof Array
+        ? filterSpecs
+        : new Array<FilterSpec>(filterSpecs);
     this.filterSpecs = filterArray(filterSpecs);
   }
 

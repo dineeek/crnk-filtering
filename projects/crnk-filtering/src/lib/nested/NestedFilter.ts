@@ -19,15 +19,22 @@ export class NestedFilter {
    * @param innerNestedFilter - Optional, used in caste of nesting `AND`, `OR`, `NOT` operators.
    */
   public constructor(
-    filterSpecs: Array<FilterSpec>,
+    filterSpecs: FilterSpec | Array<FilterSpec>,
     nestingCondition?: string,
     innerNestedFilter?: string
   ) {
     this.sort = null;
+
+    filterSpecs =
+      filterSpecs instanceof Array
+        ? filterSpecs
+        : new Array<FilterSpec>(filterSpecs);
     this.filterSpecs = filterArray(filterSpecs);
+
     this.nestingCondition = nestingCondition
       ? nestingCondition.toUpperCase()
       : NestingOperator.And;
+
     this.innerNestedFilter = innerNestedFilter ? innerNestedFilter : null;
   }
 
