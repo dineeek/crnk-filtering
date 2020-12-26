@@ -9,7 +9,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "build-crnk-filtering": "ng build crnk-filtering --prod",
-    "publish-crnk-filtering": "cd dist/crnk-filtering && npm publish"
+    "publish-crnk-filtering": "cd dist/crnk-filtering && npm publish --access=public"
   },
   "private": true,
   "dependencies": {
