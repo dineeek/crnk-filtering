@@ -1,6 +1,7 @@
 {
   "name": "crnk-filtering",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "author": "Dino Klicek",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -8,7 +9,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "build-crnk-filtering": "ng build crnk-filtering --prod",
-    "publish-crnk-filtering": "ng publish crnk-filtering"
+    "publish-crnk-filtering": "cd dist/crnk-filtering && npm publish"
   },
   "private": true,
   "dependencies": {
