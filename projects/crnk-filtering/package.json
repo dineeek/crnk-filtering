@@ -1,5 +1,5 @@
 {
-  "name": "@crnk/filter-generator",
+  "name": "crnk-filters-generator",
   "version": "1.0.0",
   "author": {
     "name": "Dino Klicek",
