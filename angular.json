@@ -3,5 +3,46 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-  }
+    "crnk-filtering": {
+      "projectType": "library",
+      "root": "projects/crnk-filtering",
+      "sourceRoot": "projects/crnk-filtering/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/crnk-filtering/tsconfig.lib.json",
+            "project": "projects/crnk-filtering/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/crnk-filtering/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/crnk-filtering/src/test.ts",
+            "tsConfig": "projects/crnk-filtering/tsconfig.spec.json",
+            "karmaConfig": "projects/crnk-filtering/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/crnk-filtering/tsconfig.lib.json",
+              "projects/crnk-filtering/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "defaultProject": "crnk-filtering"
 }
