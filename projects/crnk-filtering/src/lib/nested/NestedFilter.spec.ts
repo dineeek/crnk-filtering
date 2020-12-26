@@ -13,7 +13,7 @@ const filterArrayClient = [
   new FilterSpec('client.name', 'Jag', 'LIKE'),
 ];
 
-describe('NestedFilter', () => {
+describe('Nested-filtering', () => {
   it('should be created nested filter string with single value', () => {
     const nestedFilter = new NestedFilter([
       new FilterSpec('brandName', 'Mazda       '),

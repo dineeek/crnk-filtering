@@ -14,17 +14,17 @@ export class NestedFilter {
 
   /**
    *
-   * @param filterTypeArray - Array of FilterSpec's by which filter string is created.
+   * @param filterSpecs - Array of FilterSpec's by which filter string is created.
    * @param overallCondition - Optional, conditional operator (`AND`, `OR`, `NOT`) which wraps the whole filter string.
    * @param innerNestedFilter - Optional, used in caste of nesting `AND`, `OR`, `NOT` operators.
    */
   public constructor(
-    filterTypeArray: Array<FilterSpec>,
+    filterSpecs: Array<FilterSpec>,
     nestingCondition?: string,
     innerNestedFilter?: string
   ) {
     this.sort = null;
-    this.filterSpecs = filterArray(filterTypeArray);
+    this.filterSpecs = filterArray(filterSpecs);
     this.nestingCondition = nestingCondition
       ? nestingCondition.toUpperCase()
       : NestingOperator.And;

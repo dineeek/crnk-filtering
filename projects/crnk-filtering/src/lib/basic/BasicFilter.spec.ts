@@ -2,7 +2,7 @@ import { FilterSpec } from '../FilterSpec';
 import { FilterOperator } from '../utils/crnk-operators';
 import { BasicFilter } from './BasicFilter';
 
-describe('BasicFilter', () => {
+describe('Basic-filtering', () => {
   it('should be create string with two filters', () => {
     const filterArray = [
       new FilterSpec('user.name', 'Auto', FilterOperator.Like),

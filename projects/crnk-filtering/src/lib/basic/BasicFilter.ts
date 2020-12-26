@@ -11,11 +11,11 @@ export class BasicFilter {
 
   /**
    *
-   * @param filterTypeArray - Array of FilterSpec's by which filter string is created.
+   * @param filterSpecs - Array of FilterSpec's by which filter string is created.
    */
-  public constructor(filterTypeArray: Array<FilterSpec>) {
+  public constructor(filterSpecs: Array<FilterSpec>) {
     this.sort = null;
-    this.filterSpecs = filterArray(filterTypeArray);
+    this.filterSpecs = filterArray(filterSpecs);
   }
 
   /**
