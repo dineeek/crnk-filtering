@@ -16,11 +16,11 @@ const filterArrayClient = [
 describe('Nested-filtering', () => {
   it('should be created nested filter string with single filter', () => {
     const nestedFilter = new NestedFilter(
-      new FilterSpec('brandName', 'Mazda       ')
+      new FilterSpec('auto', 'Mazda       ')
     ).getHttpParams();
 
     expect(decodeURI(nestedFilter.toString())).toBe(
-      'filter={"EQ": {"brandName": "Mazda"}}'
+      'filter={"EQ": {"auto": "Mazda"}}'
     );
   });
 
@@ -44,17 +44,17 @@ describe('Nested-filtering', () => {
   });
 
   it('should be create nested filter inside another filter string', () => {
-    const genericFilterDealer = new NestedFilter(
+    const nestedFilterUser = new NestedFilter(
       filterArrayUser,
       NestingOperator.And
     );
-    const genericFilterBrand = new NestedFilter(
+    const nestedFilterClient = new NestedFilter(
       filterArrayClient,
       NestingOperator.Or,
-      genericFilterDealer.buildFilterString()
+      nestedFilterUser.buildFilterString()
     ).getHttpParams();
 
-    expect(decodeURI(genericFilterBrand.toString())).toBe(
+    expect(decodeURI(nestedFilterClient.toString())).toBe(
       'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}, {"AND": [{"user": {"GE": {"number": "30000"}}}, {"user": {"LIKE": {"name": "Emil%"}}}, {"user": {"contact": {"LIKE": {"email": "Emil@%"}}}}]}]}'
     );
   });
@@ -65,17 +65,17 @@ describe('Nested-filtering', () => {
       new FilterSpec('user.contact.email', '', FilterOperator.Like),
     ];
 
-    const genericFilterClient = new NestedFilter(
+    const nestedFilterClient = new NestedFilter(
       filterArrayClient,
       NestingOperator.Or
     );
-    const genericFilterUser = new NestedFilter(
+    const nestedFilterUser = new NestedFilter(
       filterArray,
       NestingOperator.And,
-      genericFilterClient.buildFilterString()
+      nestedFilterClient.buildFilterString()
     ).getHttpParams();
 
-    expect(decodeURI(genericFilterUser.toString())).toBe(
+    expect(decodeURI(nestedFilterUser.toString())).toBe(
       'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
     );
   });
@@ -167,13 +167,13 @@ describe('Nested-filtering', () => {
     ];
     const nestedFilter = new NestedFilter(filterArray);
 
-    const genericFilterClient = new NestedFilter(
+    const nestedFilterClient = new NestedFilter(
       filterArrayClient,
       NestingOperator.Or,
       nestedFilter.buildFilterString()
     ).getHttpParams();
 
-    expect(decodeURI(genericFilterClient.toString())).toBe(
+    expect(decodeURI(nestedFilterClient.toString())).toBe(
       'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}, {"AND": [{"user": {"EQ": {"id": ["1", "2", "3"]}}}, {"user": {"contact": {"LIKE": {"email": "Emil@%"}}}}, {"user": {"EQ": {"code": ["15153", "651515", "4121", "Toyota"]}}}]}]}'
     );
   });

@@ -24,7 +24,7 @@ An example looks like:
 const filterSpecUser = new FilterSpec("user.id", 12, FilterOperator.Equals);
 ```
 
-The filter value is strongly typed. Typically (by default) it is assumed that the filter value matches the amttribute type and Crnk will attept to parse passed String-based filter value accordingly. There are exceptions, for example, the LIKE filter operator always requires the filter value to be a string to support wildcards for not just String types.
+The filter value is strongly typed. Typically (by default) it is assumed that the filter value matches the attribute type and Crnk will attempt to parse passed String-based filter value accordingly. There are exceptions, for example, the LIKE filter operator always requires the filter value to be a string to support wildcards for not just String types.
 
 Operators within FilterSpec are represented by the FilterOperator class. By default, QuerySpec uses the EQ operator if no operator was provided. Crnk comes with a set of default filters as in the backend.
 
