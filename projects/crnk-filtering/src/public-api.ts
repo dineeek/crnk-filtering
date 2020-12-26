@@ -2,7 +2,7 @@
  * Public API Surface of crnk-filtering
  */
 
-export * from './lib/FilterSpec';
-export * from './lib/basic/basic-filter';
-export * from './lib/nested/nested-filter';
+export * from './lib/filter-specification/FilterSpec';
+export * from './lib/basic-filtering/BasicFilter';
+export * from './lib/nested-filtering/NestedFilter';
 export * from './lib/utils/crnk-operators';

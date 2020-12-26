@@ -1,8 +1,8 @@
 import {
   isArrayFullOfEmptyStrings,
   isArrayFullOfStrings,
-} from './utils/array-helper-functions';
-import { FilterOperator, FilterOperatorType } from './utils/crnk-operators';
+} from '../utils/array-helper-functions';
+import { FilterOperator, FilterOperatorType } from '../utils/crnk-operators';
 
 export class FilterSpec {
   public pathSpec: string;

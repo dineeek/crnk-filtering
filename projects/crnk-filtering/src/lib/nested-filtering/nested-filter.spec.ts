@@ -1,6 +1,6 @@
-import { FilterSpec } from '../FilterSpec';
+import { FilterSpec } from '../filter-specification/FilterSpec';
 import { FilterOperator, NestingOperator } from '../utils/crnk-operators';
-import { NestedFilter } from './nested-filter';
+import { NestedFilter } from './NestedFilter';
 
 const filterArrayUser = [
   new FilterSpec('user.number', '30000', FilterOperator.GreaterOrEquals),

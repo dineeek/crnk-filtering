@@ -1,6 +1,6 @@
-import { FilterSpec } from '../FilterSpec';
+import { FilterSpec } from '../filter-specification/FilterSpec';
 import { FilterOperator } from '../utils/crnk-operators';
-import { BasicFilter } from './basic-filter';
+import { BasicFilter } from './BasicFilter';
 
 describe('Basic-filtering', () => {
   it('should be create string with one filter', () => {

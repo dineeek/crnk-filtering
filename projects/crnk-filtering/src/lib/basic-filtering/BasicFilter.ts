@@ -1,5 +1,5 @@
 import { HttpParams } from '@angular/common/http';
-import { FilterSpec } from '../FilterSpec';
+import { FilterSpec } from '../filter-specification/FilterSpec';
 import { filterArray } from '../utils/array-helper-functions';
 
 /**

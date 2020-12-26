@@ -1,4 +1,4 @@
-import { FilterSpec } from '../FilterSpec';
+import { FilterSpec } from '../filter-specification/FilterSpec';
 import compact from 'lodash.compact';
 
 /**
