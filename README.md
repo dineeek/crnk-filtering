@@ -1,6 +1,6 @@
 # Crnk-filtering
 
-Crnk-filtering is a Typescript package for generating CRNK resource filters.
+Crnk-filtering is a Typescript package for generating CRNK resource filter strings.
 
 ## Features!
 
@@ -11,7 +11,7 @@ Crnk-filtering is a Typescript package for generating CRNK resource filters.
 ### Installation
 
 ```sh
-$ npm install --save crnk-filtering
+$ npm install --save @crnk/filter-generator
 ```
 
 ### Usage
