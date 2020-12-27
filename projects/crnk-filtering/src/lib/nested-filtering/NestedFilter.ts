@@ -29,7 +29,7 @@ export class NestedFilter {
     filterSpecs: FilterSpec | Array<FilterSpec>,
     nestingCondition?: NestingOperatorType,
     innerNestedFilter?: string | null,
-    includedResources?: string | Array<string>
+    includeResources?: string | Array<string>
   ) {
     this.sort = null;
 
@@ -44,8 +44,8 @@ export class NestedFilter {
 
     this.innerNestedFilter = innerNestedFilter ? innerNestedFilter : null;
 
-    this.includedResources = includedResources
-      ? getIncludedResources(includedResources)
+    this.includedResources = includeResources
+      ? getIncludedResources(includeResources)
       : null;
   }
 

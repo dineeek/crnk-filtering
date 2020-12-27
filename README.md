@@ -6,7 +6,8 @@ Crnk-filtering is a Typescript package for generating CRNK resource filter strin
 
 - [Basic filtering] (https://www.crnk.io/releases/stable/documentation/#_basic_filtering)
 - [Nested filtering] (https://www.crnk.io/releases/stable/documentation/#_nested_filtering)
-- [Sorting] (https://www.crnk.io/releases/stable/documentation/#_sorting)
+- [Sorting] (https://www.crnk.io/releases/stable/documentation/#_sorting) - from v2.0.0
+- [Inclusion of Related Resources] (https://www.crnk.io/releases/stable/documentation/#_inclusion_of_related_resources) - from v2.0.0
 
 ### Installation
 
@@ -102,7 +103,58 @@ const nestedFilter = new NestedFilter(filterSpecArray, NestingOperator.And, inne
 
 ### Sorting filtering
 
+Sorting information for the resources can be achieved by providing SortSpec parameter.
+
 ```typescript
-basicFilter.sortBy(sort.direction, sort.active); // Sets the sort direction
-// Call data fetch again
+const sortSpec = new SortSpec("user.id", SortDirection.ASC);
 ```
+
+Sorting parameters are represented by SortSpec similar to FilterSpec above.
+
+An example looks like:
+
+```typescript
+const basicFilter = new BasicFilter([
+  new FilterSpec("user.id", 12, FilterOperator.Equals),
+  new FilterSpec("user.name", "Dino", FilterOperator.Like),
+  new FilterSpec("user.age", 25, FilterOperator.GreaterOrEquals),
+]);
+
+basicFilter.sortBy([
+  new SortSpec("user.id", SortDirection.ASC),
+  new SortSpec("user.name", SortDirection.DESC),
+]);
+
+("filter[user.id][EQ]=12&filter[user.name][LIKE]=Dino%&filter[user.age][GE]=25&sort=user.id,-user.name");
+```
+
+The same logic applied for creating sorting with nesting filter string.
+
+### Inclusion of Related Resources
+
+Information about relationships to include in the response can be achieved by providing an `includeResources` parameters.
+
+```typescript
+const basicFilter = new BasicFilter(
+  [
+    new FilterSpec("user.id", 12, FilterOperator.Equals),
+    new FilterSpec("user.name", "Dino", FilterOperator.Like),
+    new FilterSpec(
+      "client.personalInfo.age",
+      25,
+      FilterOperator.GreaterOrEquals
+    ),
+  ],
+  ["client", "car"] // Included resources
+).getHttpParams();
+
+basicFilter.sortBy([
+  new SortSpec("client.id", SortDirection.ASC),
+  new SortSpec("car.name", SortDirection.DESC),
+]);
+
+// basicFilter.getHttpParams() returns:
+("include=client,car&filter[user.id][EQ]=12&filter[user.name][LIKE]=Dino%&filter[client.personalInfo.age][GE]=25&sort=client.id,-car.name");
+```
+
+It is important to note that the requested main resource will be affected by included filter params or sorting params.

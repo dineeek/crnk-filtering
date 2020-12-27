@@ -21,7 +21,7 @@ export class BasicFilter {
    */
   public constructor(
     filterSpecs: FilterSpec | Array<FilterSpec>,
-    includedResources?: string | Array<string>
+    includeResources?: string | Array<string>
   ) {
     this.sort = null;
 
@@ -30,8 +30,8 @@ export class BasicFilter {
         ? filterArray(filterSpecs)
         : filterArray(new Array<FilterSpec>(filterSpecs));
 
-    this.includedResources = includedResources
-      ? getIncludedResources(includedResources)
+    this.includedResources = includeResources
+      ? getIncludedResources(includeResources)
       : null;
   }
 
