@@ -15,7 +15,8 @@ export class NestedFilter {
   /**
    *
    * @param filterSpecs - Array of FilterSpec's by which filter string is created.
-   * @param nestingCondition - Optional, conditional operator (`AND`, `OR`, `NOT`) which wraps the whole filter string.
+   * @param nestingCondition - Conditional nesting operator (`AND`, `OR`, `NOT`) which wraps the whole filter string.
+   * By default, operator `AND` is applied.
    * @param innerNestedFilter - Optional, used in caste of nesting `AND`, `OR`, `NOT` operators.
    */
   public constructor(
@@ -134,7 +135,7 @@ export class NestedFilter {
    * Method `nestRelations` builds filter string based on relation attributes of object name attributes.
    * Works with JSON multi-level relationships attribute name.
    *
-   * @param filter - One filter from array.
+   * @param filter - One filterSpec from array.
    * @param filterString - Core string part of every filter.
    */
   private nestRelations(filter: FilterSpec, filterString: string): string {

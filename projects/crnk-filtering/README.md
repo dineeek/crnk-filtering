@@ -2,7 +2,7 @@
 
 Crnk-filtering is a Typescript package for generating CRNK resource filter strings.
 
-## Features!
+## Features
 
 - [Basic filtering] (https://www.crnk.io/releases/stable/documentation/#_basic_filtering)
 - [Nested filtering] (https://www.crnk.io/releases/stable/documentation/#_nested_filtering)
@@ -28,16 +28,16 @@ The filter value is strongly typed. Typically (by default) it is assumed that th
 
 Operators within FilterSpec are represented by the FilterOperator class. By default, QuerySpec uses the EQ operator if no operator was provided. Crnk comes with a set of default filters as in the backend.
 
-To apply generated CRNK filter, in HTTP calls define parameter `params` like in example bellow:
+To apply generated CRNK filter in HTTP calls, define HTTP parameter `params` like in example bellow:
 
 ```typescript
   getData(
-    basicFilter: BasicFilter,
+    filter: BasicFilter | NestedFilter,
   ): Observable<any> {
     return this.http.get<any>(
       your_url,
       {
-        params: basicFilter.getHttpParams(),
+        params: filter.getHttpParams(),
       }
     );
   }
@@ -73,14 +73,14 @@ const nestedFilter = new NestedFilter(
 ).getHttpParams();
 ```
 
-Above nested filter will result with following string:
+Above nested filter will result with the following string:
 
 ```typescript
 {"AND":
     [
       {"user": {"EQ": {"id": "12"}}},
       {"user": {"LIKE": {"name": "Dino%"}}},
-      {"user": {"EQ": {"age": "32"}}},
+      {"user": {"GE": {"age": "25"}}},
     ]
 }
 ```

@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "author": {
     "name": "Dino Klicek",
-    "email": "klicek.dino@gmail.com",
-    "url": "github.com/dineeek"
+    "email": "klicek.dino@gmail.com"
   },
   "peerDependencies": {
     "@angular/common": "^11.1.0-next.3",
