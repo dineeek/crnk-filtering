@@ -1,6 +1,11 @@
 import { HttpParams } from '@angular/common/http';
+import { SortSpec } from '../../public-api';
 import { FilterSpec } from '../filter-specification/FilterSpec';
-import { filterArray } from '../utils/array-helper-functions';
+import {
+  filterArray,
+  getIncludedResources,
+  getSortingParams,
+} from '../utils/array-helper-functions';
 import { NestingOperator, NestingOperatorType } from '../utils/crnk-operators';
 
 /**
@@ -11,6 +16,7 @@ export class NestedFilter {
   private filterSpecs: Array<FilterSpec>;
   private nestingCondition: NestingOperatorType;
   private innerNestedFilter: string | null;
+  private includedResources: string | null; // Inclusion of Related Resources
 
   /**
    *
@@ -22,21 +28,25 @@ export class NestedFilter {
   public constructor(
     filterSpecs: FilterSpec | Array<FilterSpec>,
     nestingCondition?: NestingOperatorType,
-    innerNestedFilter?: string
+    innerNestedFilter?: string | null,
+    includedResources?: string | Array<string>
   ) {
     this.sort = null;
 
-    filterSpecs =
+    this.filterSpecs =
       filterSpecs instanceof Array
-        ? filterSpecs
-        : new Array<FilterSpec>(filterSpecs);
-    this.filterSpecs = filterArray(filterSpecs);
+        ? filterArray(filterSpecs)
+        : filterArray(new Array<FilterSpec>(filterSpecs));
 
     this.nestingCondition = nestingCondition
       ? nestingCondition
       : NestingOperator.And;
 
     this.innerNestedFilter = innerNestedFilter ? innerNestedFilter : null;
+
+    this.includedResources = includedResources
+      ? getIncludedResources(includedResources)
+      : null;
   }
 
   /**
@@ -52,6 +62,10 @@ export class NestedFilter {
    * @param httpParams - HTTP parameters.
    */
   private setHttpParams(httpParams: HttpParams): HttpParams {
+    if (this.includedResources) {
+      httpParams = httpParams.set('include', this.includedResources);
+    }
+
     if (this.filterSpecs.length) {
       httpParams = httpParams.set('filter', this.buildFilterString());
     } else if (!this.filterSpecs.length && this.innerNestedFilter) {
@@ -74,20 +88,12 @@ export class NestedFilter {
   }
 
   /**
-   * Method `sortBy` creates second part of HTTP request by setting up a sort string.
+   * Method `sortBy` creates sorting part of HTTP request by setting up a sort string.
    *
-   * @param sortDirection - Sorting direction which can be descending (`'desc'`) or ascending (`'asc'`).
-   * @param columnName - Name of the table column by which it should be sorted.
+   * @param sortSpecs - Sorting specification of the sort path and sort direction.
    */
-  public sortBy(sortDirection: string, columnName: string): void {
-    switch (sortDirection) {
-      case 'desc':
-        this.sort = '-' + columnName;
-        break;
-      case 'asc':
-        this.sort = columnName;
-        break;
-    }
+  public sortBy(sortSpecs: SortSpec | Array<SortSpec>): void {
+    this.sort = getSortingParams(sortSpecs);
   }
 
   /**

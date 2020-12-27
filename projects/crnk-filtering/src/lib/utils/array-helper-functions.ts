@@ -56,15 +56,22 @@ export function isArrayFullOfEmptyStrings(arr: any[]): boolean {
   return trimmedStrings.join('') ? false : true;
 }
 
-export function getIncludedResourcesParams(
-  includedResources: Array<string>
-): string {
-  return includedResources.length > 1
-    ? includedResources.join(',')
-    : includedResources[0];
+export function getIncludedResources(
+  includedResources: string | Array<string>
+): string | null {
+  const resources =
+    includedResources instanceof Array
+      ? filterEmptyStringValues(includedResources)
+      : filterEmptyStringValues(new Array<string>(includedResources));
+
+  if (!resources.length) {
+    return null;
+  }
+
+  return resources.length > 1 ? resources.join(',') : resources[0];
 }
 
-export function filterEmptyStringValues(arr: string[]): string[] {
+function filterEmptyStringValues(arr: string[]): string[] {
   return compact(trimStringsInsideArray(arr));
 }
 

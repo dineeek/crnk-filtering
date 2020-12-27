@@ -1,5 +1,7 @@
 import { FilterSpec } from '../filter-specification/FilterSpec';
 import { FilterOperator, NestingOperator } from '../utils/crnk-operators';
+import { SortDirection } from '../utils/sort/sort-direction';
+import { SortSpec } from '../utils/sort/sort-spec';
 import { NestedFilter } from './NestedFilter';
 
 const filterArrayUser = [
@@ -32,14 +34,11 @@ describe('Nested-filtering', () => {
     );
   });
 
-  it('should be created nested filter string with default operators', () => {
-    const nestedFilter = new NestedFilter(
-      filterArrayClient,
-      NestingOperator.Or
-    ).getHttpParams();
+  it('should be created nested filter string with default operator', () => {
+    const nestedFilter = new NestedFilter(filterArrayClient).getHttpParams();
 
     expect(decodeURI(nestedFilter.toString())).toBe(
-      'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
+      'filter={"AND": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
     );
   });
 
@@ -221,6 +220,141 @@ describe('Nested-filtering', () => {
 
     expect(decodeURI(nestedFilter.toString())).toBe(
       'filter={"AND": [{"user": {"EQ": {"id": "12"}}}, {"user": {"address": {"city": {"street": {"GE": {"apartment": "10"}}}}}}]}'
+    );
+  });
+
+  it('should be created nested filter string with inclusion of single related resources', () => {
+    const nestedFilter = new NestedFilter(
+      filterArrayClient,
+      NestingOperator.Or,
+      null,
+      'user'
+    ).getHttpParams();
+
+    expect(decodeURI(nestedFilter.toString())).toBe(
+      'include=user&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
+    );
+  });
+
+  it('should be created nested filter string with inclusion of multiple related resources', () => {
+    const nestedFilter = new NestedFilter(
+      filterArrayClient,
+      NestingOperator.Or,
+      null,
+      ['user', 'car', 'house']
+    ).getHttpParams();
+
+    expect(decodeURI(nestedFilter.toString())).toBe(
+      'include=user,car,house&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
+    );
+  });
+
+  it('should be created nested filter string with non inclusion of empty single related resources', () => {
+    const nestedFilter = new NestedFilter(
+      filterArrayClient,
+      NestingOperator.Or,
+      null,
+      '  '
+    ).getHttpParams();
+
+    expect(decodeURI(nestedFilter.toString())).toBe(
+      'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
+    );
+  });
+
+  it('should be created nested filter string with inclusion of multiple related resources while some are empty', () => {
+    const nestedFilter = new NestedFilter(
+      filterArrayClient,
+      NestingOperator.Or,
+      null,
+      ['', '  ', 'house', '  ', 'apartment']
+    ).getHttpParams();
+
+    expect(decodeURI(nestedFilter.toString())).toBe(
+      'include=house,apartment&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
+    );
+  });
+
+  it('should be created nested filter string with non inclusion of empty multiple related resources', () => {
+    const nestedFilter = new NestedFilter(
+      filterArrayClient,
+      NestingOperator.Or,
+      null,
+      ['  ', ' ', '  ']
+    ).getHttpParams();
+
+    expect(decodeURI(nestedFilter.toString())).toBe(
+      'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
+    );
+  });
+
+  it('should be create nested filter with inclusion and single sort param', () => {
+    const nestedFilterUser = new NestedFilter(
+      filterArrayUser,
+      NestingOperator.And
+    );
+    const nestedFilterClient = new NestedFilter(
+      filterArrayClient,
+      NestingOperator.Or,
+      nestedFilterUser.buildFilterString(),
+      'client'
+    );
+    nestedFilterClient.sortBy(new SortSpec('user.name', SortDirection.DESC));
+
+    expect(decodeURI(nestedFilterClient.getHttpParams().toString())).toBe(
+      'include=client&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}, {"AND": [{"user": {"GE": {"number": "30000"}}}, {"user": {"LIKE": {"name": "Emil%"}}}, {"user": {"contact": {"LIKE": {"email": "Emil@%"}}}}]}]}&sort=-user.name'
+    );
+  });
+
+  it('should be create nested filter with inclusion and multiple sort param', () => {
+    const nestedFilterUser = new NestedFilter(
+      filterArrayUser,
+      NestingOperator.And
+    );
+    const nestedFilterClient = new NestedFilter(
+      filterArrayClient,
+      NestingOperator.Or,
+      nestedFilterUser.buildFilterString(),
+      ['client', 'house']
+    );
+    nestedFilterClient.sortBy([
+      new SortSpec('user.name', SortDirection.ASC),
+      new SortSpec('user.number', SortDirection.DESC),
+    ]);
+
+    expect(decodeURI(nestedFilterClient.getHttpParams().toString())).toBe(
+      'include=client,house&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}, {"AND": [{"user": {"GE": {"number": "30000"}}}, {"user": {"LIKE": {"name": "Emil%"}}}, {"user": {"contact": {"LIKE": {"email": "Emil@%"}}}}]}]}&sort=user.name,-user.number'
+    );
+  });
+
+  it('should be created nested filter string with non inclusion and empty single sort param', () => {
+    const nestedFilter = new NestedFilter(
+      filterArrayClient,
+      NestingOperator.Or,
+      null,
+      '  '
+    );
+    nestedFilter.sortBy(new SortSpec('  ', SortDirection.ASC));
+
+    expect(decodeURI(nestedFilter.getHttpParams().toString())).toBe(
+      'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
+    );
+  });
+
+  it('should be created nested filter string with inclusion and empty multiple sort param', () => {
+    const nestedFilter = new NestedFilter(
+      filterArrayClient,
+      NestingOperator.Or,
+      null,
+      'client'
+    );
+    nestedFilter.sortBy([
+      new SortSpec('  ', SortDirection.ASC),
+      new SortSpec(' ', SortDirection.DESC),
+    ]);
+
+    expect(decodeURI(nestedFilter.getHttpParams().toString())).toBe(
+      'include=client&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
     );
   });
 });

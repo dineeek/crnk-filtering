@@ -2,8 +2,7 @@ import { HttpParams } from '@angular/common/http';
 import { FilterSpec } from '../filter-specification/FilterSpec';
 import {
   filterArray,
-  filterEmptyStringValues,
-  getIncludedResourcesParams,
+  getIncludedResources,
   getSortingParams,
 } from '../utils/array-helper-functions';
 import { SortSpec } from '../utils/sort/sort-spec';
@@ -14,7 +13,7 @@ import { SortSpec } from '../utils/sort/sort-spec';
 export class BasicFilter {
   private sort: string | null;
   private filterSpecs: Array<FilterSpec>;
-  private includedResources: Array<string> = []; // Inclusion of Related Resources
+  private includedResources: string | null; // Inclusion of Related Resources
 
   /**
    *
@@ -22,7 +21,7 @@ export class BasicFilter {
    */
   public constructor(
     filterSpecs: FilterSpec | Array<FilterSpec>,
-    includedResource?: string | Array<string>
+    includedResources?: string | Array<string>
   ) {
     this.sort = null;
 
@@ -31,12 +30,9 @@ export class BasicFilter {
         ? filterArray(filterSpecs)
         : filterArray(new Array<FilterSpec>(filterSpecs));
 
-    if (includedResource) {
-      this.includedResources =
-        includedResource instanceof Array
-          ? filterEmptyStringValues(includedResource)
-          : filterEmptyStringValues(new Array<string>(includedResource));
-    }
+    this.includedResources = includedResources
+      ? getIncludedResources(includedResources)
+      : null;
   }
 
   /**
@@ -52,11 +48,8 @@ export class BasicFilter {
    * @param httpParams - HTTP parameters.
    */
   private setHttpParams(httpParams: HttpParams): HttpParams {
-    if (this.includedResources.length) {
-      httpParams = httpParams.set(
-        'include',
-        getIncludedResourcesParams(this.includedResources)
-      );
+    if (this.includedResources) {
+      httpParams = httpParams.set('include', this.includedResources);
     }
 
     if (this.filterSpecs.length) {
