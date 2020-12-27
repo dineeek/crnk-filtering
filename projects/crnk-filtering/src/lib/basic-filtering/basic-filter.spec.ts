@@ -1,5 +1,6 @@
 import { FilterSpec } from '../filter-specification/FilterSpec';
 import { FilterOperator } from '../utils/crnk-operators';
+import { SortDirection } from '../utils/sort/sort-direction';
 import { BasicFilter } from './BasicFilter';
 
 describe('Basic-filtering', () => {
@@ -63,14 +64,148 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.address.city', ['Zurich', 'Ljubljana', 'Novi Sad']),
       new FilterSpec(
         'user.address.street',
-        ['Gustav     ', 'Kaiser', '  StraĂźe '],
+        ['Gustav     ', 'Kaiser', '  Strasse '],
         FilterOperator.Like
       ),
     ];
     const basicFilter = new BasicFilter(filterArray).getHttpParams();
 
     expect(decodeURI(basicFilter.toString())).toBe(
-      'filter[user.number][EQ]=13513,23151,21512&filter[user.address.city][EQ]=Zurich,Ljubljana,Novi Sad&filter[user.address.street][LIKE]=Gustav%,Kaiser%,StraĂźe%'
+      'filter[user.number][EQ]=13513,23151,21512&filter[user.address.city][EQ]=Zurich,Ljubljana,Novi Sad&filter[user.address.street][LIKE]=Gustav%,Kaiser%,Strasse%'
+    );
+  });
+
+  it('should create filter string with one sort param', () => {
+    const filterArray = [
+      new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
+      new FilterSpec('user.number', '14123', FilterOperator.Equals),
+    ];
+    const basicFilter = new BasicFilter(filterArray);
+    basicFilter.sortBy({
+      pathSpec: 'user.name',
+      direction: SortDirection.DESC,
+    });
+
+    expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
+      'filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=-user.name'
+    );
+  });
+
+  it('should create filter string with multiple sort param', () => {
+    const filterArray = [
+      new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
+      new FilterSpec('user.number', '14123', FilterOperator.Equals),
+    ];
+    const basicFilter = new BasicFilter(filterArray);
+    basicFilter.sortBy([
+      {
+        pathSpec: 'user.name',
+        direction: SortDirection.DESC,
+      },
+      { pathSpec: 'user.number', direction: SortDirection.ASC },
+    ]);
+
+    expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
+      'filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=-user.name,user.number'
+    );
+  });
+
+  it('should create filter string with non sort param - empty sorting', () => {
+    const filterArray = [
+      new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
+      new FilterSpec('user.number', '14123', FilterOperator.Equals),
+    ];
+    const basicFilter = new BasicFilter(filterArray);
+    basicFilter.sortBy([
+      {
+        pathSpec: '   ',
+        direction: SortDirection.DESC,
+      },
+      { pathSpec: '', direction: SortDirection.ASC },
+    ]);
+
+    expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
+      'filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123'
+    );
+  });
+
+  it('should create filter string with inclusion of related resource', () => {
+    const filterArray = [
+      new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
+      new FilterSpec('user.number', '14123', FilterOperator.Equals),
+    ];
+    const basicFilter = new BasicFilter(filterArray, 'client');
+    basicFilter.sortBy({
+      pathSpec: 'client.name',
+      direction: SortDirection.DESC,
+    });
+
+    expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
+      'include=client&filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=-client.name'
+    );
+  });
+
+  it('should create filter string without inclusion of related resource', () => {
+    const filterArray = [
+      new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
+      new FilterSpec('user.number', '14123', FilterOperator.Equals),
+    ];
+    const basicFilter = new BasicFilter(filterArray, '');
+    basicFilter.sortBy({
+      pathSpec: 'client.name',
+      direction: SortDirection.DESC,
+    });
+
+    expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
+      'filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=-client.name'
+    );
+  });
+
+  it('should create filter string with inclusion of multiple related resources', () => {
+    const filterArray = [
+      new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
+      new FilterSpec('user.number', '14123', FilterOperator.Equals),
+    ];
+    const basicFilter = new BasicFilter(filterArray, ['client', 'car', ' ']);
+    basicFilter.sortBy({
+      pathSpec: 'client.name',
+      direction: SortDirection.ASC,
+    });
+
+    expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
+      'include=client,car&filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=client.name'
+    );
+  });
+
+  it('should create filter string without inclusion of multiple related resources', () => {
+    const filterArray = [
+      new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
+      new FilterSpec('user.number', '14123', FilterOperator.Equals),
+    ];
+    const basicFilter = new BasicFilter(filterArray, []);
+    basicFilter.sortBy({
+      pathSpec: 'user.name',
+      direction: SortDirection.DESC,
+    });
+
+    expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
+      'filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=-user.name'
+    );
+  });
+
+  it('should create filter string without inclusion of multiple empty related resources', () => {
+    const filterArray = [
+      new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
+      new FilterSpec('user.number', '14123', FilterOperator.Equals),
+    ];
+    const basicFilter = new BasicFilter(filterArray, ['  ', '', '    ']);
+    basicFilter.sortBy({
+      pathSpec: 'user.name',
+      direction: SortDirection.ASC,
+    });
+
+    expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
+      'filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=user.name'
     );
   });
 });

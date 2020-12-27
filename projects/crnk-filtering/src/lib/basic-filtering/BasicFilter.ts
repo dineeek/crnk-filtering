@@ -1,33 +1,49 @@
 import { HttpParams } from '@angular/common/http';
 import { FilterSpec } from '../filter-specification/FilterSpec';
-import { filterArray } from '../utils/array-helper-functions';
+import {
+  filterArray,
+  filterEmptyStringValues,
+  getIncludedResourcesParams,
+  getSortingParams,
+} from '../utils/array-helper-functions';
+import { SortSpec } from '../utils/sort/sort-spec';
 
 /**
  * 	Represents a instance for creating CRNK basic filter string and applying sorting.
  */
 export class BasicFilter {
   private sort: string | null;
-  public filterSpecs: Array<FilterSpec>;
+  private filterSpecs: Array<FilterSpec>;
+  private includedResources: Array<string> = []; // Inclusion of Related Resources
 
   /**
    *
-   * @param filterSpecs - Array of FilterSpec's by which filter string is created.
+   * @param filterSpecs - Array of FilterSpec's for creating filter string is created.
    */
-  public constructor(filterSpecs: FilterSpec | Array<FilterSpec>) {
+  public constructor(
+    filterSpecs: FilterSpec | Array<FilterSpec>,
+    includedResource?: string | Array<string>
+  ) {
     this.sort = null;
 
-    filterSpecs =
+    this.filterSpecs =
       filterSpecs instanceof Array
-        ? filterSpecs
-        : new Array<FilterSpec>(filterSpecs);
-    this.filterSpecs = filterArray(filterSpecs);
+        ? filterArray(filterSpecs)
+        : filterArray(new Array<FilterSpec>(filterSpecs));
+
+    if (includedResource) {
+      this.includedResources =
+        includedResource instanceof Array
+          ? filterEmptyStringValues(includedResource)
+          : filterEmptyStringValues(new Array<string>(includedResource));
+    }
   }
 
   /**
    * Method `getHttpParams` is used in services to get and set HTTP request parameters.
    */
   public getHttpParams(): HttpParams {
-    return this.setHttpParams();
+    return this.setHttpParams(new HttpParams());
   }
 
   /**
@@ -35,14 +51,19 @@ export class BasicFilter {
    *
    * @param httpParams - HTTP parameters.
    */
-  private setHttpParams(): HttpParams {
-    let httpParams = new HttpParams();
-
-    if (this.filterSpecs.length) {
-      httpParams = this.buildStringFilter(new HttpParams());
+  private setHttpParams(httpParams: HttpParams): HttpParams {
+    if (this.includedResources.length) {
+      httpParams = httpParams.set(
+        'include',
+        getIncludedResourcesParams(this.includedResources)
+      );
     }
 
-    if (this.sort) {
+    if (this.filterSpecs.length) {
+      httpParams = this.buildStringFilter(httpParams);
+    }
+
+    if (this.sort && this.sort.length) {
       httpParams = httpParams.set('sort', this.sort);
     }
 
@@ -57,20 +78,12 @@ export class BasicFilter {
   }
 
   /**
-   * Method `sortBy` creates second part of HTTP request by setting up a sort string.
+   * Method `sortBy` creates sorting part of HTTP request by setting up a sort string.
    *
-   * @param sortDirection - Sorting direction which can be descending (`'desc'`) or ascending (`'asc'`).
-   * @param columnName - Name of the table column by which it should be sorted.
+   * @param sortSpecs - Sorting specification of the sort path and sort direction.
    */
-  public sortBy(sortDirection: string, columnName: string): void {
-    switch (sortDirection) {
-      case 'desc':
-        this.sort = '-' + columnName;
-        break;
-      case 'asc':
-        this.sort = columnName;
-        break;
-    }
+  public sortBy(sortSpecs: SortSpec | Array<SortSpec>): void {
+    this.sort = getSortingParams(sortSpecs);
   }
 
   private buildStringFilter(httpParams: HttpParams): HttpParams {

@@ -8,7 +8,7 @@ import { NestingOperator, NestingOperatorType } from '../utils/crnk-operators';
  */
 export class NestedFilter {
   private sort: string | null;
-  public filterSpecs: Array<FilterSpec>;
+  private filterSpecs: Array<FilterSpec>;
   private nestingCondition: NestingOperatorType;
   private innerNestedFilter: string | null;
 

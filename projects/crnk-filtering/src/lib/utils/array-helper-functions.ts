@@ -1,5 +1,7 @@
-import { FilterSpec } from '../filter-specification/FilterSpec';
 import compact from 'lodash.compact';
+import { FilterSpec } from '../filter-specification/FilterSpec';
+import { SortParam } from './sort/sort-param';
+import { SortSpec } from './sort/sort-spec';
 
 /**
  * Method `filterArray` returns array with filters which does not meet needed criteria.
@@ -53,4 +55,40 @@ export function isArrayFullOfStrings(arr: any[]): boolean {
 export function isArrayFullOfEmptyStrings(arr: any[]): boolean {
   const trimmedStrings = getTrimmedStringsArray(arr);
   return trimmedStrings.join('') ? false : true;
+}
+
+export function getIncludedResourcesParams(
+  includedResources: Array<string>
+): string {
+  return includedResources.length > 1
+    ? includedResources.join(',')
+    : includedResources[0];
+}
+
+export function filterEmptyStringValues(arr: string[]): string[] {
+  return compact(trimStringsInsideArray(arr));
+}
+
+export function getSortingParams(
+  sortSpecs: SortSpec | Array<SortSpec>
+): string {
+  if (sortSpecs instanceof Array) {
+    const sortParams: string[] = [];
+
+    sortSpecs.forEach((sortSpec) => {
+      const sortParam = new SortParam(sortSpec.pathSpec, sortSpec.direction)
+        .sortParam;
+      if (sortParam) {
+        sortParams.push(sortParam);
+      }
+    });
+
+    if (!sortParams.length) {
+      return '';
+    }
+
+    return sortParams.length > 1 ? sortParams.join(',') : sortParams[0];
+  } else {
+    return new SortParam(sortSpecs.pathSpec, sortSpecs.direction).sortParam;
+  }
 }
