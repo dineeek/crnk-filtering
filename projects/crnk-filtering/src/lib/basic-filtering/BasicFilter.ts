@@ -63,7 +63,7 @@ export class BasicFilter {
       httpParams = this.buildStringFilter(httpParams);
     }
 
-    if (this.sort && this.sort.length) {
+    if (this.sort) {
       httpParams = httpParams.set('sort', this.sort);
     }
 

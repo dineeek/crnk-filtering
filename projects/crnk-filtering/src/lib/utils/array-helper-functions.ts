@@ -70,18 +70,16 @@ export function filterEmptyStringValues(arr: string[]): string[] {
 
 export function getSortingParams(
   sortSpecs: SortSpec | Array<SortSpec>
-): string {
+): string | null {
   if (sortSpecs instanceof Array) {
-    const sortParams: string[] = [];
+    let sortParams: string[] = [];
 
-    sortSpecs.forEach((sortSpec) => {
-      if (sortSpec.sortParam) {
-        sortParams.push(sortSpec.sortParam);
-      }
-    });
+    sortParams = sortSpecs
+      .filter((sortSpec) => sortSpec.sortParam)
+      .map((sortSpec) => sortSpec.sortParam);
 
     if (!sortParams.length) {
-      return '';
+      return null;
     }
 
     return sortParams.length > 1 ? sortParams.join(',') : sortParams[0];

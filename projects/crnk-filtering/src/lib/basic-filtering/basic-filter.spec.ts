@@ -105,6 +105,22 @@ describe('Basic-filtering', () => {
     );
   });
 
+  it('should create filter string with one sort param while second param is empty', () => {
+    const filterArray = [
+      new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
+      new FilterSpec('user.number', '14123', FilterOperator.Equals),
+    ];
+    const basicFilter = new BasicFilter(filterArray);
+    basicFilter.sortBy([
+      new SortSpec('  ', SortDirection.DESC),
+      new SortSpec('user.number', SortDirection.ASC),
+    ]);
+
+    expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
+      'filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=user.number'
+    );
+  });
+
   it('should create filter string with non sort param - empty sorting path spec', () => {
     const filterArray = [
       new FilterSpec('user.name', 'Gustav', FilterOperator.Like),

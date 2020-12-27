@@ -1,7 +1,7 @@
 import { SortDirection } from './sort-direction';
 
 export class SortSpec {
-  public sortParam: any = null;
+  public sortParam = '';
 
   constructor(sortPathSpec: string, direction: SortDirection) {
     if (sortPathSpec.trim()) {
