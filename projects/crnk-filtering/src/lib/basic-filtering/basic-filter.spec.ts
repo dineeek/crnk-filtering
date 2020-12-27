@@ -1,6 +1,7 @@
 import { FilterSpec } from '../filter-specification/FilterSpec';
 import { FilterOperator } from '../utils/crnk-operators';
 import { SortDirection } from '../utils/sort/sort-direction';
+import { SortSpec } from '../utils/sort/sort-spec';
 import { BasicFilter } from './BasicFilter';
 
 describe('Basic-filtering', () => {
@@ -81,10 +82,7 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
     const basicFilter = new BasicFilter(filterArray);
-    basicFilter.sortBy({
-      pathSpec: 'user.name',
-      direction: SortDirection.DESC,
-    });
+    basicFilter.sortBy(new SortSpec('user.name', SortDirection.DESC));
 
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
       'filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=-user.name'
@@ -98,11 +96,8 @@ describe('Basic-filtering', () => {
     ];
     const basicFilter = new BasicFilter(filterArray);
     basicFilter.sortBy([
-      {
-        pathSpec: 'user.name',
-        direction: SortDirection.DESC,
-      },
-      { pathSpec: 'user.number', direction: SortDirection.ASC },
+      new SortSpec('user.name', SortDirection.DESC),
+      new SortSpec('user.number', SortDirection.ASC),
     ]);
 
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
@@ -110,18 +105,15 @@ describe('Basic-filtering', () => {
     );
   });
 
-  it('should create filter string with non sort param - empty sorting', () => {
+  it('should create filter string with non sort param - empty sorting path spec', () => {
     const filterArray = [
       new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
     const basicFilter = new BasicFilter(filterArray);
     basicFilter.sortBy([
-      {
-        pathSpec: '   ',
-        direction: SortDirection.DESC,
-      },
-      { pathSpec: '', direction: SortDirection.ASC },
+      new SortSpec('', SortDirection.DESC),
+      new SortSpec('   ', SortDirection.ASC),
     ]);
 
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
@@ -135,10 +127,7 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
     const basicFilter = new BasicFilter(filterArray, 'client');
-    basicFilter.sortBy({
-      pathSpec: 'client.name',
-      direction: SortDirection.DESC,
-    });
+    basicFilter.sortBy(new SortSpec('client.name', SortDirection.DESC));
 
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
       'include=client&filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=-client.name'
@@ -151,10 +140,7 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
     const basicFilter = new BasicFilter(filterArray, '');
-    basicFilter.sortBy({
-      pathSpec: 'client.name',
-      direction: SortDirection.DESC,
-    });
+    basicFilter.sortBy(new SortSpec('client.name', SortDirection.DESC));
 
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
       'filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=-client.name'
@@ -167,10 +153,7 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
     const basicFilter = new BasicFilter(filterArray, ['client', 'car', ' ']);
-    basicFilter.sortBy({
-      pathSpec: 'client.name',
-      direction: SortDirection.ASC,
-    });
+    basicFilter.sortBy(new SortSpec('client.name', SortDirection.ASC));
 
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
       'include=client,car&filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=client.name'
@@ -183,10 +166,7 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
     const basicFilter = new BasicFilter(filterArray, []);
-    basicFilter.sortBy({
-      pathSpec: 'user.name',
-      direction: SortDirection.DESC,
-    });
+    basicFilter.sortBy(new SortSpec('user.name', SortDirection.DESC));
 
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
       'filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=-user.name'
@@ -199,10 +179,7 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
     const basicFilter = new BasicFilter(filterArray, ['  ', '', '    ']);
-    basicFilter.sortBy({
-      pathSpec: 'user.name',
-      direction: SortDirection.ASC,
-    });
+    basicFilter.sortBy(new SortSpec('user.name', SortDirection.ASC));
 
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
       'filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=user.name'

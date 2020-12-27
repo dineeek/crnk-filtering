@@ -1,6 +1,5 @@
 import compact from 'lodash.compact';
 import { FilterSpec } from '../filter-specification/FilterSpec';
-import { SortParam } from './sort/sort-param';
 import { SortSpec } from './sort/sort-spec';
 
 /**
@@ -76,10 +75,8 @@ export function getSortingParams(
     const sortParams: string[] = [];
 
     sortSpecs.forEach((sortSpec) => {
-      const sortParam = new SortParam(sortSpec.pathSpec, sortSpec.direction)
-        .sortParam;
-      if (sortParam) {
-        sortParams.push(sortParam);
+      if (sortSpec.sortParam) {
+        sortParams.push(sortSpec.sortParam);
       }
     });
 
@@ -89,6 +86,6 @@ export function getSortingParams(
 
     return sortParams.length > 1 ? sortParams.join(',') : sortParams[0];
   } else {
-    return new SortParam(sortSpecs.pathSpec, sortSpecs.direction).sortParam;
+    return sortSpecs.sortParam;
   }
 }
