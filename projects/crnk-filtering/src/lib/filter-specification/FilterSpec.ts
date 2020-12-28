@@ -2,7 +2,7 @@ import { FilterOperator, FilterOperatorType } from '../utils/crnk-operators';
 import {
   isArrayFullOfEmptyStrings,
   isArrayFullOfStrings,
-  setQuotersAndPercentageSignOnValues,
+  setQuotersAndPercentageSignOnLikeValues,
   setQuotersOnValues,
 } from '../utils/helper-functions';
 
@@ -42,12 +42,7 @@ export class FilterSpec {
   public isValid(): boolean {
     this.pathSpec = this.pathSpec.trim();
 
-    if (
-      !this.pathSpec ||
-      this.value === null ||
-      this.value === undefined ||
-      Number.isNaN(this.value)
-    ) {
+    if (!this.pathSpec || !this.value || Number.isNaN(this.value)) {
       return false;
     }
 
@@ -87,28 +82,28 @@ export class FilterSpec {
       return;
     }
 
-    this.value = setQuotersAndPercentageSignOnValues(this.value, 'BASIC');
+    this.value = setQuotersAndPercentageSignOnLikeValues(this.value, 'BASIC');
     this.filterSpecsPrepared = true;
   }
 
   /**
-   * Method `setNestedFilterSpecs` calls the function to prepare filter attribute names and
-   * filter values by putting quotes and/or percentage values.
+   * Method `setNestedFilterSpecs` calls the functions to prepare filter attribute names and
+   * filter values by putting quotes and/or percentage values for nested filter string.
    */
   public setNestedFilterSpecs(): void {
     if (this.filterSpecsPrepared) {
       return;
     }
 
-    this.setRelationAttributes();
-    this.prepareFilterValues();
+    this.setNestedRelationAttributes();
+    this.prepareNestedFilterValues();
     this.filterSpecsPrepared = true;
   }
 
   /**
-   * Method `setRelationAttributes` is setting up filter relation attributes if the attribute name is nested.
+   * Method `setNestedRelationAttributes` is setting up filter relation attributes if the attribute name is nested.
    */
-  private setRelationAttributes(): void {
+  private setNestedRelationAttributes(): void {
     if (this.pathSpec.includes('.')) {
       this.relationPathAttributes = this.pathSpec.split('.');
       this.lastPathAttribute = this.relationPathAttributes.slice(-1)[0]; // Takes last attribute out of array
@@ -121,13 +116,13 @@ export class FilterSpec {
   }
 
   /**
-   * Method `prepareFilterValues` is setting double quotes and percentage signs on values if the filter operator is `LIKE`.
-   * Else, only quotes are put on values.
+   * Method `prepareNestedFilterValues` is setting double quotes and percentage signs on values if the filter operator is `LIKE`.
+   * Else, only double quotes are put on values.
    */
-  private prepareFilterValues(): void {
+  private prepareNestedFilterValues(): void {
     this.value =
       this.operator === 'LIKE'
-        ? setQuotersAndPercentageSignOnValues(this.value, 'NESTED')
+        ? setQuotersAndPercentageSignOnLikeValues(this.value, 'NESTED')
         : setQuotersOnValues(this.value);
   }
 }

@@ -1,15 +1,15 @@
 import { HttpParams } from '@angular/common/http';
 import { SortSpec } from '../../public-api';
 import { FilterSpec } from '../filter-specification/FilterSpec';
+import { NestingOperator, NestingOperatorType } from '../utils/crnk-operators';
 import {
   filterArray,
   getIncludedResources,
   getSortingParams,
 } from '../utils/helper-functions';
-import { NestingOperator, NestingOperatorType } from '../utils/crnk-operators';
 
 /**
- * 	 Represents a instance for creating filter string and applying sorting.
+ * 	 Represents a instance of nested filter string.
  */
 export class NestedFilter {
   private sort: string | null;
@@ -20,7 +20,7 @@ export class NestedFilter {
 
   /**
    *
-   * @param filterSpecs - Array of FilterSpec's by which filter string is created.
+   * @param filterSpecs - Array of FilterSpec's for creating filter string.
    * @param nestingCondition - Conditional nesting operator (`AND`, `OR`, `NOT`) which wraps the whole filter string.
    * By default, operator `AND` is applied.
    * @param innerNestedFilter - Optional, used in caste of nesting `AND`, `OR`, `NOT` operators.
@@ -50,7 +50,7 @@ export class NestedFilter {
   }
 
   /**
-   * Method `getHttpParams` is used in services to get and set HTTP request parameters.
+   * Method `getHttpParams` is used to get and set HTTP request parameters.
    */
   public getHttpParams(): HttpParams {
     return this.setHttpParams(new HttpParams());
@@ -69,7 +69,7 @@ export class NestedFilter {
     if (this.filterSpecs.length) {
       httpParams = httpParams.set('filter', this.buildFilterString());
     } else if (!this.filterSpecs.length && this.innerNestedFilter) {
-      // Nested inner filter string becomes the main filter (case when main filter is non existing because of its values)
+      // Nested inner filter string becomes the main filter -case when main filter is non existing because of its values
       httpParams = httpParams.set('filter', this.innerNestedFilter);
     }
 
@@ -97,8 +97,7 @@ export class NestedFilter {
   }
 
   /**
-   * Method `buildFilterString` creates the whole filter string by accumulating every filter contained in the filtered array.
-   *
+   * Method `buildFilterString` creates the whole filter string by accumulating every filter contained in the filtered FilterSpec array.
    */
   public buildFilterString(): string {
     let filterString = '';
@@ -120,12 +119,12 @@ export class NestedFilter {
         : filterStringCore;
     });
 
-    // Case if there is necessary to nest AND, OR, NOT operators - look at buildNestedOperatorsFilterString method
+    // Case if there is necessary to nest AND, OR, NOT operators
     filterString = this.innerNestedFilter
       ? filterString + this.innerNestedFilter
       : this.removeComma(filterString);
 
-    // Apply conditional operator if array consist more than one value or it has built in inner nested filter string
+    // Apply nesting conditional operator if array consist more than one value or it has built in inner nested filter string
     if (
       this.filterSpecs.length > 1 ||
       (this.filterSpecs.length && this.innerNestedFilter)
@@ -154,11 +153,11 @@ export class NestedFilter {
   }
 
   /**
-   * Method `removeComma` removes comma at the end of passed filter string.
+   * Method `removeComma` removes comma and one space at the end of passed filter string.
    *
    * @param filterString - Filter string for performing action.
    */
   private removeComma(filterString: string): string {
-    return filterString.slice(0, -2); // Removes comma and one space
+    return filterString.slice(0, -2);
   }
 }

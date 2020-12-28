@@ -9,7 +9,7 @@ import {
 import { SortSpec } from '../utils/sort/sort-spec';
 
 /**
- * 	Represents a instance for creating CRNK basic filter string and applying sorting.
+ * 	Represents a instance of basic filter string.
  */
 export class BasicFilter {
   private sort: string | null;
@@ -18,7 +18,7 @@ export class BasicFilter {
 
   /**
    *
-   * @param filterSpecs - Array of FilterSpec's for creating filter string is created.
+   * @param filterSpecs - Array of FilterSpec's for creating filter string.
    */
   public constructor(
     filterSpecs: FilterSpec | Array<FilterSpec>,
@@ -37,7 +37,7 @@ export class BasicFilter {
   }
 
   /**
-   * Method `getHttpParams` is used in services to get and set HTTP request parameters.
+   * Method `getHttpParams` is used to get and set HTTP request parameters.
    */
   public getHttpParams(): HttpParams {
     return this.setHttpParams(new HttpParams());

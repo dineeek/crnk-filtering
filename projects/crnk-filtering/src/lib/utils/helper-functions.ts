@@ -3,7 +3,7 @@ import { FilterSpec } from '../filter-specification/FilterSpec';
 import { SortSpec } from './sort/sort-spec';
 
 /**
- * Function `filterArray` returns array with filters which does not meet needed criteria.
+ * Helper function `filterArray` returns an array with filters that meet the needed criteria to be valid.
  *
  * @param filterSpecs - Array of FilterSpec which values goes through filtering.
  */
@@ -29,14 +29,38 @@ export function filterArray(filterSpecs: Array<FilterSpec>): Array<FilterSpec> {
   return filteredArray;
 }
 
+/**
+ * Helper function `isArrayFullOfStrings` determines if all elements of the array are a type of string.
+ *
+ * @param arr - Array to check if all elements are string.
+ */
+export function isArrayFullOfStrings(arr: any[]): boolean {
+  return arr.every((element: any) => typeof element === 'string');
+}
+
+/**
+ * Helper function `isArrayContainingString` determines if the array has at least one string.
+ *
+ * @param arr - Array to search for string type.
+ */
 function isArrayContainingString(arr: any[]): boolean {
   return arr.some((element: any) => typeof element === 'string');
 }
 
-function getTrimmedStringsArray(arr: any[]): string[] {
+/**
+ * Helper function `getTrimmedStringsArray` returns all strings inside array trimmed.
+ *
+ * @param arr - String array to perform trimming on its elements.
+ */
+function getTrimmedStringsArray(arr: string[]): string[] {
   return arr.map((element: string) => element.trim());
 }
 
+/**
+ * Helper function `trimStringsInsideArray` returns trimmed strings inside array.
+ *
+ * @param arr - Array to search for strings values to re
+ */
 function trimStringsInsideArray(arr: any[]): any[] {
   const trimmedArray = arr.filter((element: string) => {
     if (typeof element === 'string') {
@@ -47,15 +71,21 @@ function trimStringsInsideArray(arr: any[]): any[] {
   return trimmedArray;
 }
 
-export function isArrayFullOfStrings(arr: any[]): boolean {
-  return arr.every((element: any) => typeof element === 'string');
-}
-
+/**
+ * Helper function `isArrayContainingString` determines if array has empty string elements.
+ *
+ * @param arr - Array to check if all string elements are empty.
+ */
 export function isArrayFullOfEmptyStrings(arr: any[]): boolean {
   const trimmedStrings = getTrimmedStringsArray(arr);
   return trimmedStrings.join('') ? false : true;
 }
 
+/**
+ * Helper function `getIncludedResources` returns included resources as a single string value.
+ *
+ * @param includedResources - One or many included resources of relationship.
+ */
 export function getIncludedResources(
   includedResources: string | Array<string>
 ): string | null {
@@ -71,10 +101,20 @@ export function getIncludedResources(
   return resources.length > 1 ? resources.join(',') : resources[0];
 }
 
+/**
+ * Helper function `filterEmptyStringValues` trims all string elements and removes all falsy values from the array.
+ *
+ * @param arr - String array to perform action.
+ */
 function filterEmptyStringValues(arr: string[]): string[] {
   return compact(trimStringsInsideArray(arr));
 }
 
+/**
+ * Helper function `getSortingParams` returns sorting specs as a single string value.
+ *
+ * @param sortSpecs - One or many SortSpecs.
+ */
 export function getSortingParams(
   sortSpecs: SortSpec | Array<SortSpec>
 ): string | null {
@@ -96,11 +136,11 @@ export function getSortingParams(
 }
 
 /**
- * Function `setQuotersAndPercentageSignOnValues` sets the percentage sign and in nested filtering double-quotes
- * on all array values or single value. If the array contains only one value then filter value losses array data type and
- * it is passed as a single value.
+ * Function `setQuotersAndPercentageSignOnValues` sets the percentage sign and in nested filtering,
+ * double-quotes on all array values or a single value.
+ * If the array contains only one value then filter value losses array data type and it is passed as a single value.
  */
-export function setQuotersAndPercentageSignOnValues(
+export function setQuotersAndPercentageSignOnLikeValues(
   value: any,
   filterType: 'BASIC' | 'NESTED'
 ): void {

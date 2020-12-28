@@ -33,7 +33,7 @@ describe('Nested-filtering', () => {
       'filter={"AND": [{"user": {"GE": {"number": "30000"}}}, {"user": {"LIKE": {"name": "Emil%"}}}, {"user": {"contact": {"LIKE": {"email": "Emil@%"}}}}]}'
     );
 
-    // What happens if there is not new instantiation
+    // No new instantiation
     expect(decodeURI(nestedFilter.getHttpParams().toString())).toBe(
       'filter={"AND": [{"user": {"GE": {"number": "30000"}}}, {"user": {"LIKE": {"name": "Emil%"}}}, {"user": {"contact": {"LIKE": {"email": "Emil@%"}}}}]}'
     );
@@ -131,7 +131,7 @@ describe('Nested-filtering', () => {
       'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}, {"AND": [{"bike": {"LIKE": {"name": "Suz%"}}}, {"bike": {"company": {"LIKE": {"email": "Suzuki%"}}}}]}]}'
     );
 
-    // What happens if there is not new instantiation
+    // No new instantiation
     expect(decodeURI(nestedFilterUsers.getHttpParams().toString())).toBe(
       'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}, {"AND": [{"bike": {"LIKE": {"name": "Suz%"}}}, {"bike": {"company": {"LIKE": {"email": "Suzuki%"}}}}]}]}'
     );
@@ -186,7 +186,7 @@ describe('Nested-filtering', () => {
       'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}, {"AND": [{"user": {"EQ": {"id": ["1", "2", "3"]}}}, {"user": {"contact": {"LIKE": {"email": "Emil@%"}}}}, {"user": {"EQ": {"code": ["15153", "651515", "4121", "Toyota"]}}}]}]}'
     );
 
-    // What happens if there is not new instantiation
+    // No new instantiation
     expect(decodeURI(nestedFilterClient.getHttpParams().toString())).toBe(
       'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}, {"AND": [{"user": {"EQ": {"id": ["1", "2", "3"]}}}, {"user": {"contact": {"LIKE": {"email": "Emil@%"}}}}, {"user": {"EQ": {"code": ["15153", "651515", "4121", "Toyota"]}}}]}]}'
     );
@@ -320,7 +320,7 @@ describe('Nested-filtering', () => {
       'include=client&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}, {"AND": [{"user": {"GE": {"number": "30000"}}}, {"user": {"LIKE": {"name": "Emil%"}}}, {"user": {"contact": {"LIKE": {"email": "Emil@%"}}}}]}]}&sort=-user.name'
     );
 
-    // What happens if there is not new instantiation
+    // No new instantiation
     expect(decodeURI(nestedFilterClient.getHttpParams().toString())).toBe(
       'include=client&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}, {"AND": [{"user": {"GE": {"number": "30000"}}}, {"user": {"LIKE": {"name": "Emil%"}}}, {"user": {"contact": {"LIKE": {"email": "Emil@%"}}}}]}]}&sort=-user.name'
     );
@@ -360,7 +360,7 @@ describe('Nested-filtering', () => {
       'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
     );
 
-    // What happens if there is not new instantiation
+    // No new instantiation
     expect(decodeURI(nestedFilter.getHttpParams().toString())).toBe(
       'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
     );

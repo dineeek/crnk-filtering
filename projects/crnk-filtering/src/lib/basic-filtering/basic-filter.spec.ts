@@ -27,7 +27,7 @@ describe('Basic-filtering', () => {
       'filter[user.name][LIKE]=Auto%&filter[user.number][EQ]=265112'
     );
 
-    // What happens if there is not new instantiation
+    // No new instantiation
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
       'filter[user.name][LIKE]=Auto%&filter[user.number][EQ]=265112'
     );
@@ -80,7 +80,7 @@ describe('Basic-filtering', () => {
       'filter[user.number][EQ]=13513,23151,21512&filter[user.address.city][EQ]=Zurich,Ljubljana,Novi Sad&filter[user.address.street][LIKE]=Gustav%,Kaiser%,Strasse%'
     );
 
-    // What happens if there is not new instantiation
+    // No new instantiation
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
       'filter[user.number][EQ]=13513,23151,21512&filter[user.address.city][EQ]=Zurich,Ljubljana,Novi Sad&filter[user.address.street][LIKE]=Gustav%,Kaiser%,Strasse%'
     );
@@ -114,7 +114,7 @@ describe('Basic-filtering', () => {
       'filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=-user.name,user.number'
     );
 
-    // What happens if there is not new instantiation
+    // No new instantiation
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
       'filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=-user.name,user.number'
     );

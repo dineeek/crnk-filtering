@@ -4,8 +4,8 @@ Crnk-filtering is a Typescript package for generating CRNK resource filter strin
 
 ## Features
 
-- [Basic filtering] (https://www.crnk.io/releases/stable/documentation/#_basic_filtering)
-- [Nested filtering] (https://www.crnk.io/releases/stable/documentation/#_nested_filtering)
+- [Basic filtering] (https://www.crnk.io/releases/stable/documentation/#_basic_filtering) - from v1.0.1
+- [Nested filtering] (https://www.crnk.io/releases/stable/documentation/#_nested_filtering) - from v1.0.1
 - [Sorting] (https://www.crnk.io/releases/stable/documentation/#_sorting) - from v2.0.0
 - [Inclusion of Related Resources] (https://www.crnk.io/releases/stable/documentation/#_inclusion_of_related_resources) - from v2.0.0
 
