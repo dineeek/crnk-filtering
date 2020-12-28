@@ -3,6 +3,5 @@
   "dest": "../../dist/crnk-filtering",
   "lib": {
     "entryFile": "src/public-api.ts"
-  },
-  "whitelistedNonPeerDependencies": ["tslib", "lodash.compact"]
+  }
 }

@@ -89,14 +89,14 @@ describe('Basic-filtering', () => {
 
   it('should create filter string with one sort param', () => {
     const filterArray = [
-      new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
-      new FilterSpec('user.number', '14123', FilterOperator.Equals),
+      new FilterSpec('user.name', 'Dino', FilterOperator.Like),
+      new FilterSpec('user.number', '14141', FilterOperator.Equals),
     ];
     const basicFilter = new BasicFilter(filterArray);
     basicFilter.sortBy(new SortSpec('user.name', SortDirection.DESC));
 
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
-      'filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=-user.name'
+      'filter[user.name][LIKE]=Dino%&filter[user.number][EQ]=14141&sort=-user.name'
     );
   });
 

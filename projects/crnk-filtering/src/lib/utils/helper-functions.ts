@@ -1,4 +1,3 @@
-import compact from 'lodash.compact';
 import { FilterSpec } from '../filter-specification/FilterSpec';
 import { SortSpec } from './sort/sort-spec';
 
@@ -12,7 +11,7 @@ export function filterArray(filterSpecs: Array<FilterSpec>): Array<FilterSpec> {
     if (!filterSpec) {
       return null;
     } else if (filterSpec.value instanceof Array) {
-      filterSpec.value = compact(filterSpec.value); // Lodash compact method - removes null, undefined and '' from an array
+      filterSpec.value = compact(filterSpec.value);
       if (isArrayFullOfStrings(filterSpec.value)) {
         // Trimming strings if they exists in array
         filterSpec.value = compact(getTrimmedStringsArray(filterSpec.value));
@@ -29,6 +28,17 @@ export function filterArray(filterSpecs: Array<FilterSpec>): Array<FilterSpec> {
   });
 
   return filteredArray;
+}
+
+/**
+ * Helper function `compact` removes null, undefined and '' from an array.
+ *
+ * @param arr - Array to perform action.
+ */
+function compact(arr: any[]): any[] {
+  return arr.filter(
+    (element) => element !== null && element !== undefined && element !== ''
+  );
 }
 
 /**
