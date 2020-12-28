@@ -5,7 +5,7 @@ import {
   filterArray,
   getIncludedResources,
   getSortingParams,
-} from '../utils/array-helper-functions';
+} from '../utils/helper-functions';
 import { NestingOperator, NestingOperatorType } from '../utils/crnk-operators';
 
 /**
@@ -103,20 +103,20 @@ export class NestedFilter {
   public buildFilterString(): string {
     let filterString = '';
     let filterStringCore = '';
-    this.filterSpecs.forEach((filter) => {
-      filter.setNestedFilterSpecs();
+    this.filterSpecs.forEach((filterSpec) => {
+      filterSpec.setNestedFilterSpecs();
 
       filterStringCore =
         '{"' +
-        filter.operator +
+        filterSpec.operator +
         '": {"' +
-        filter.lastPathAttribute +
+        filterSpec.lastPathAttribute +
         '": ' +
-        filter.value +
+        filterSpec.value +
         '}}, ';
 
-      filterString += filter.relationPathAttributes.length
-        ? this.nestRelations(filter, filterStringCore)
+      filterString += filterSpec.relationPathAttributes.length
+        ? this.nestRelations(filterSpec, filterStringCore)
         : filterStringCore;
     });
 
@@ -141,12 +141,12 @@ export class NestedFilter {
    * Method `nestRelations` builds filter string based on relation attributes of object name attributes.
    * Works with JSON multi-level relationships attribute name.
    *
-   * @param filter - One filterSpec from array.
+   * @param filterSpec - One filterSpec from array.
    * @param filterString - Core string part of every filter.
    */
-  private nestRelations(filter: FilterSpec, filterString: string): string {
+  private nestRelations(filterSpec: FilterSpec, filterString: string): string {
     filterString = this.removeComma(filterString);
-    filter.relationPathAttributes.forEach((attribute) => {
+    filterSpec.relationPathAttributes.forEach((attribute) => {
       filterString = '{"' + attribute + '": ' + filterString + '}';
     });
 

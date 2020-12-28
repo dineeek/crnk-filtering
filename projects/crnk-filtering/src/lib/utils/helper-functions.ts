@@ -3,7 +3,7 @@ import { FilterSpec } from '../filter-specification/FilterSpec';
 import { SortSpec } from './sort/sort-spec';
 
 /**
- * Method `filterArray` returns array with filters which does not meet needed criteria.
+ * Function `filterArray` returns array with filters which does not meet needed criteria.
  *
  * @param filterSpecs - Array of FilterSpec which values goes through filtering.
  */
@@ -93,4 +93,66 @@ export function getSortingParams(
   } else {
     return sortSpecs.sortParam;
   }
+}
+
+export function prepareBasicFilterLikeValue(value: any): string {
+  if (value instanceof Array) {
+    const percentageSignValues: string[] = [];
+    value.forEach((element: any) => {
+      percentageSignValues.push(element + '%');
+    });
+
+    value =
+      percentageSignValues.length === 1
+        ? percentageSignValues[0]
+        : percentageSignValues.join(',');
+  } else {
+    value = value + '%';
+  }
+
+  return value;
+}
+
+/**
+ * Function `setQuotersAndPercentageSignOnValues` sets the percentage sign and double-quotes on all array values or single value.
+ * If the array contains only one value then filter value losses array data type and it is passed as a single value.
+ */
+export function setQuotersAndPercentageSignOnValues(value: any): void {
+  if (value instanceof Array) {
+    const percentageSignValues: string[] = [];
+    value.forEach((element: any) => {
+      percentageSignValues.push('"' + element + '%"');
+    });
+
+    value =
+      percentageSignValues.length === 1
+        ? percentageSignValues[0]
+        : '[' + percentageSignValues.join(', ') + ']';
+  } else {
+    value = '"' + value + '%"';
+  }
+
+  return value;
+}
+
+/**
+ * Function `setQuotersOnValues` sets the double-quotes on all array values or single value.
+ * If the array contains only one value then filter value losses array data type and is passed as a single value.
+ */
+export function setQuotersOnValues(value: any): void {
+  if (value instanceof Array) {
+    const quoteMarkedValues: string[] = [];
+    value.forEach((element: any) => {
+      quoteMarkedValues.push('"' + element + '"');
+    });
+
+    value =
+      quoteMarkedValues.length === 1
+        ? quoteMarkedValues[0]
+        : '[' + quoteMarkedValues.join(', ') + ']';
+  } else {
+    value = '"' + value + '"';
+  }
+
+  return value;
 }

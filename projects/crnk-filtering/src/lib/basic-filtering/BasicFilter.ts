@@ -1,10 +1,11 @@
 import { HttpParams } from '@angular/common/http';
 import { FilterSpec } from '../filter-specification/FilterSpec';
+import { FilterOperator } from '../utils/crnk-operators';
 import {
   filterArray,
   getIncludedResources,
   getSortingParams,
-} from '../utils/array-helper-functions';
+} from '../utils/helper-functions';
 import { SortSpec } from '../utils/sort/sort-spec';
 
 /**
@@ -80,35 +81,17 @@ export class BasicFilter {
   }
 
   private buildStringFilter(httpParams: HttpParams): HttpParams {
-    this.filterSpecs.forEach((filter) => {
-      if (filter.operator === 'LIKE') {
-        filter = this.prepareFilterValue(filter);
+    this.filterSpecs.forEach((filterSpec) => {
+      if (filterSpec.operator === FilterOperator.Like) {
+        filterSpec.setBasicFilterLikeSpecs();
       }
 
       httpParams = httpParams.set(
-        'filter[' + filter.pathSpec + '][' + filter.operator + ']',
-        filter.value
+        'filter[' + filterSpec.pathSpec + '][' + filterSpec.operator + ']',
+        filterSpec.value
       );
     });
 
     return httpParams;
-  }
-
-  private prepareFilterValue(filter: FilterSpec): FilterSpec {
-    if (filter.value instanceof Array) {
-      const percentageSignValues: string[] = [];
-      filter.value.forEach((element: any) => {
-        percentageSignValues.push(element + '%');
-      });
-
-      filter.value =
-        percentageSignValues.length === 1
-          ? percentageSignValues[0]
-          : percentageSignValues.join(',');
-    } else {
-      filter.value = filter.value + '%';
-    }
-
-    return filter;
   }
 }

@@ -21,9 +21,14 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.name', 'Auto', FilterOperator.Like),
       new FilterSpec('user.number', '265112', FilterOperator.Equals),
     ];
-    const basicFilter = new BasicFilter(filterArray).getHttpParams();
+    const basicFilter = new BasicFilter(filterArray);
 
-    expect(decodeURI(basicFilter.toString())).toBe(
+    expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
+      'filter[user.name][LIKE]=Auto%&filter[user.number][EQ]=265112'
+    );
+
+    // What happens if there is not new instantiation
+    expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
       'filter[user.name][LIKE]=Auto%&filter[user.number][EQ]=265112'
     );
   });
@@ -69,9 +74,14 @@ describe('Basic-filtering', () => {
         FilterOperator.Like
       ),
     ];
-    const basicFilter = new BasicFilter(filterArray).getHttpParams();
+    const basicFilter = new BasicFilter(filterArray);
 
-    expect(decodeURI(basicFilter.toString())).toBe(
+    expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
+      'filter[user.number][EQ]=13513,23151,21512&filter[user.address.city][EQ]=Zurich,Ljubljana,Novi Sad&filter[user.address.street][LIKE]=Gustav%,Kaiser%,Strasse%'
+    );
+
+    // What happens if there is not new instantiation
+    expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
       'filter[user.number][EQ]=13513,23151,21512&filter[user.address.city][EQ]=Zurich,Ljubljana,Novi Sad&filter[user.address.street][LIKE]=Gustav%,Kaiser%,Strasse%'
     );
   });
@@ -100,6 +110,11 @@ describe('Basic-filtering', () => {
       new SortSpec('user.number', SortDirection.ASC),
     ]);
 
+    expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
+      'filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=-user.name,user.number'
+    );
+
+    // What happens if there is not new instantiation
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
       'filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=-user.name,user.number'
     );
