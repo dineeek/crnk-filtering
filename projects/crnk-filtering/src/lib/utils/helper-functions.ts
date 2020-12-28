@@ -9,7 +9,9 @@ import { SortSpec } from './sort/sort-spec';
  */
 export function filterArray(filterSpecs: Array<FilterSpec>): Array<FilterSpec> {
   const filteredArray = filterSpecs.filter((filterSpec) => {
-    if (filterSpec.value instanceof Array) {
+    if (!filterSpec) {
+      return null;
+    } else if (filterSpec.value instanceof Array) {
       filterSpec.value = compact(filterSpec.value); // Lodash compact method - removes null, undefined and '' from an array
       if (isArrayFullOfStrings(filterSpec.value)) {
         // Trimming strings if they exists in array
