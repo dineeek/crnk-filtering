@@ -12,7 +12,7 @@ export class FilterSpec {
   public operator: string;
   public relationPathAttributes: string[];
   public lastPathAttribute = '';
-  private filterSpecsPrepared = false;
+  public specsPreparedFlag = false;
 
   /**
    * Represents a filter used in CRNK filtering.
@@ -78,12 +78,8 @@ export class FilterSpec {
    * Method `setBasicFilterLikeSpecs` calls the function to prepare basic filter values for LIKE operator by putting percentage values.
    */
   public setBasicFilterLikeSpecs(): void {
-    if (this.filterSpecsPrepared) {
-      return;
-    }
-
     this.value = setQuotersAndPercentageSignOnLikeValues(this.value, 'BASIC');
-    this.filterSpecsPrepared = true;
+    this.specsPreparedFlag = true;
   }
 
   /**
@@ -91,13 +87,9 @@ export class FilterSpec {
    * filter values by putting quotes and/or percentage values for nested filter string.
    */
   public setNestedFilterSpecs(): void {
-    if (this.filterSpecsPrepared) {
-      return;
-    }
-
     this.setNestedRelationAttributes();
     this.prepareNestedFilterValues();
-    this.filterSpecsPrepared = true;
+    this.specsPreparedFlag = true;
   }
 
   /**

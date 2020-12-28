@@ -103,7 +103,9 @@ export class NestedFilter {
     let filterString = '';
     let filterStringCore = '';
     this.filterSpecs.forEach((filterSpec) => {
-      filterSpec.setNestedFilterSpecs();
+      if (!filterSpec.specsPreparedFlag) {
+        filterSpec.setNestedFilterSpecs();
+      }
 
       filterStringCore =
         '{"' +

@@ -410,7 +410,7 @@ describe('Nested-filtering', () => {
     );
   });
 
-  it('should be create nested filter with default pagination specs', () => {
+  it('should be create nested filter with custom pagination specs', () => {
     const nestedFilterUser = new NestedFilter(
       filterArrayUser,
       NestingOperator.And

@@ -82,7 +82,10 @@ export class BasicFilter {
 
   private buildStringFilter(httpParams: HttpParams): HttpParams {
     this.filterSpecs.forEach((filterSpec) => {
-      if (filterSpec.operator === FilterOperator.Like) {
+      if (
+        !filterSpec.specsPreparedFlag &&
+        filterSpec.operator === FilterOperator.Like
+      ) {
         filterSpec.setBasicFilterLikeSpecs();
       }
 
