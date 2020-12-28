@@ -8,6 +8,7 @@ Crnk-filtering is a Typescript package for generating CRNK resource filter strin
 - [Nested filtering] (https://www.crnk.io/releases/stable/documentation/#_nested_filtering) - from v1.0.1
 - [Sorting] (https://www.crnk.io/releases/stable/documentation/#_sorting) - from v2.0.0
 - [Inclusion of Related Resources] (https://www.crnk.io/releases/stable/documentation/#_inclusion_of_related_resources) - from v2.0.0
+- [Pagination] (https://www.crnk.io/releases/stable/documentation/#_pagination) - from v2.1.0
 
 ### Installation
 
@@ -36,7 +37,7 @@ To apply generated CRNK filter in HTTP calls, define HTTP parameter `params` lik
     filter: BasicFilter | NestedFilter,
   ): Observable<any> {
     return this.http.get<any>(
-      your_url,
+      'YOUR_URL',
       {
         params: filter.getHttpParams(),
       }
@@ -158,3 +159,67 @@ basicFilter.sortBy([
 ```
 
 It is important to note that the requested main resource will be affected by included filter params or sorting params.
+
+### Pagination
+
+Crnk filtering can be used with `mat-paginator` elements in your table component. Pagination comes by default with support for offset/limit paging:
+
+```typescript
+  public paginationSpec: PaginationSpec;
+
+  constructor() {
+    this.paginationSpec = new PaginationSpec(); // creates default paging with params - pageIndex = 0, pageSize = 10, length = 0
+
+    // Or create custom pagination specification
+    this.paginationSpec = new PaginationSpec(); // creates default paging with params - pageIndex = 1, pageSize = 20, length = 10
+  }
+
+```
+
+Example of URL:
+
+`GET /tasks?page[offset]=0&page[limit]=10`
+
+It is only useful with Angular material tables and declared `mat-paginator`:
+
+```html
+<mat-paginator
+  showFirstLastButtons
+  [pageSizeOptions]="[10, 25, 50, 100, 200]"
+  [length]="paginationSpec.pageEvent.length"
+  [pageSize]="paginationSpec.pageEvent.pageSize"
+  [pageIndex]="0"
+  (page)="onChangePaginatorPage($event)"
+></mat-paginator>
+```
+
+In the component are declared methods to track changing page events and resetting pagination:
+
+```typescript
+  onChangePaginatorPage(e: PageEvent): void {
+    this.paginationSpec.setPagination(e);
+    // Fetch data again
+  }
+
+  // Resetting pagination
+  resetPagination(): void {
+    this.paginationSpec.resetPaginator();
+  }
+```
+
+To apply generated pagination, define HTTP parameter `params` like in example bellow:
+
+```typescript
+  getData(
+    filter: BasicFilter | NestedFilter,
+    paginationSpec: PaginationSpec
+  ): Observable<any> {
+    return this.http.get<any>(
+      'YOUR_URL',
+      {
+        params: paginationSpec.setHttpParams(filter.getHttpParams()),
+      }
+    );
+  }
+
+```

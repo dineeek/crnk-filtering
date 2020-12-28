@@ -1,5 +1,7 @@
+import { PageEvent } from '@angular/material/paginator';
 import { FilterSpec } from '../filter-specification/FilterSpec';
 import { FilterOperator } from '../utils/crnk-operators';
+import { PaginationSpec } from '../utils/pagination/pagination-spec';
 import { SortDirection } from '../utils/sort/sort-direction';
 import { SortSpec } from '../utils/sort/sort-spec';
 import { BasicFilter } from './BasicFilter';
