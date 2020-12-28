@@ -95,41 +95,31 @@ export function getSortingParams(
   }
 }
 
-export function prepareBasicFilterLikeValue(value: any): string {
-  if (value instanceof Array) {
-    const percentageSignValues: string[] = [];
-    value.forEach((element: any) => {
-      percentageSignValues.push(element + '%');
-    });
-
-    value =
-      percentageSignValues.length === 1
-        ? percentageSignValues[0]
-        : percentageSignValues.join(',');
-  } else {
-    value = value + '%';
-  }
-
-  return value;
-}
-
 /**
- * Function `setQuotersAndPercentageSignOnValues` sets the percentage sign and double-quotes on all array values or single value.
- * If the array contains only one value then filter value losses array data type and it is passed as a single value.
+ * Function `setQuotersAndPercentageSignOnValues` sets the percentage sign and in nested filtering double-quotes
+ * on all array values or single value. If the array contains only one value then filter value losses array data type and
+ * it is passed as a single value.
  */
-export function setQuotersAndPercentageSignOnValues(value: any): void {
+export function setQuotersAndPercentageSignOnValues(
+  value: any,
+  filterType: 'BASIC' | 'NESTED'
+): void {
   if (value instanceof Array) {
     const percentageSignValues: string[] = [];
     value.forEach((element: any) => {
-      percentageSignValues.push('"' + element + '%"');
+      filterType === 'BASIC'
+        ? percentageSignValues.push(element + '%')
+        : percentageSignValues.push('"' + element + '%"');
     });
 
     value =
       percentageSignValues.length === 1
         ? percentageSignValues[0]
+        : filterType === 'BASIC'
+        ? percentageSignValues.join(',')
         : '[' + percentageSignValues.join(', ') + ']';
   } else {
-    value = '"' + value + '%"';
+    value = filterType === 'BASIC' ? value + '%' : '"' + value + '%"';
   }
 
   return value;

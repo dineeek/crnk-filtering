@@ -1,11 +1,10 @@
+import { FilterOperator, FilterOperatorType } from '../utils/crnk-operators';
 import {
   isArrayFullOfEmptyStrings,
   isArrayFullOfStrings,
-  prepareBasicFilterLikeValue,
   setQuotersAndPercentageSignOnValues,
   setQuotersOnValues,
 } from '../utils/helper-functions';
-import { FilterOperator, FilterOperatorType } from '../utils/crnk-operators';
 
 export class FilterSpec {
   public pathSpec: string;
@@ -88,7 +87,7 @@ export class FilterSpec {
       return;
     }
 
-    this.value = prepareBasicFilterLikeValue(this.value);
+    this.value = setQuotersAndPercentageSignOnValues(this.value, 'BASIC');
     this.filterSpecsPrepared = true;
   }
 
@@ -128,7 +127,7 @@ export class FilterSpec {
   private prepareFilterValues(): void {
     this.value =
       this.operator === 'LIKE'
-        ? setQuotersAndPercentageSignOnValues(this.value)
+        ? setQuotersAndPercentageSignOnValues(this.value, 'NESTED')
         : setQuotersOnValues(this.value);
   }
 }
