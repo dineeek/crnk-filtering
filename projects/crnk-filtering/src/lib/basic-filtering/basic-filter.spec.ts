@@ -1,4 +1,3 @@
-import { PageEvent } from '@angular/material/paginator';
 import { FilterSpec } from '../filter-specification/FilterSpec';
 import { FilterOperator } from '../utils/crnk-operators';
 import { PaginationSpec } from '../utils/pagination/pagination-spec';
@@ -216,6 +215,44 @@ describe('Basic-filtering', () => {
 
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
       'filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=user.name'
+    );
+  });
+
+  it('should create filter string with default pagination specs', () => {
+    const filterArray = [
+      new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
+      new FilterSpec('user.number', '14123', FilterOperator.Equals),
+    ];
+    const basicFilter = new BasicFilter(filterArray, 'client');
+    basicFilter.sortBy(new SortSpec('client.name', SortDirection.DESC));
+
+    const paginationSpec = new PaginationSpec();
+
+    expect(
+      decodeURI(
+        paginationSpec.setHttpParams(basicFilter.getHttpParams()).toString()
+      )
+    ).toBe(
+      'include=client&filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=-client.name&page[limit]=10&page[offset]=0'
+    );
+  });
+
+  it('should create filter string with custom pagination specs', () => {
+    const filterArray = [
+      new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
+      new FilterSpec('user.number', '14123', FilterOperator.Equals),
+    ];
+    const basicFilter = new BasicFilter(filterArray, 'client');
+    basicFilter.sortBy(new SortSpec('client.name', SortDirection.DESC));
+
+    const paginationSpec = new PaginationSpec(2, 20, 0);
+
+    expect(
+      decodeURI(
+        paginationSpec.setHttpParams(basicFilter.getHttpParams()).toString()
+      )
+    ).toBe(
+      'include=client&filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=-client.name&page[limit]=20&page[offset]=40'
     );
   });
 });

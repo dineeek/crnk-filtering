@@ -180,7 +180,7 @@ Example of URL:
 
 `GET /tasks?page[offset]=0&page[limit]=10`
 
-It is only useful with Angular material tables and declared `mat-paginator`:
+It is only useful with Angular material tables and declared `mat-paginator` in HTML:
 
 ```html
 <mat-paginator
@@ -222,4 +222,6 @@ To apply generated pagination, define HTTP parameter `params` like in example be
     );
   }
 
+// paginationSpec.setHttpParams(filter.getHttpParams()) returns example:
+("filter[user.id][EQ]=12&filter[user.name][LIKE]=Dino%&filter[client.personalInfo.age][GE]=25&sort=client.id,-car.name&page[limit]=10&page[offset]=0");
 ```

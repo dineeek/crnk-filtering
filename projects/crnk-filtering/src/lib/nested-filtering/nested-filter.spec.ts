@@ -1,5 +1,6 @@
 import { FilterSpec } from '../filter-specification/FilterSpec';
 import { FilterOperator, NestingOperator } from '../utils/crnk-operators';
+import { PaginationSpec } from '../utils/pagination/pagination-spec';
 import { SortDirection } from '../utils/sort/sort-direction';
 import { SortSpec } from '../utils/sort/sort-spec';
 import { NestedFilter } from './NestedFilter';
@@ -380,6 +381,69 @@ describe('Nested-filtering', () => {
 
     expect(decodeURI(nestedFilter.getHttpParams().toString())).toBe(
       'include=client&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
+    );
+  });
+
+  it('should be create nested filter with default pagination specs', () => {
+    const nestedFilterUser = new NestedFilter(
+      filterArrayUser,
+      NestingOperator.And
+    );
+    const nestedFilterClient = new NestedFilter(
+      filterArrayClient,
+      NestingOperator.Or,
+      nestedFilterUser.buildFilterString(),
+      'client'
+    );
+    nestedFilterClient.sortBy(new SortSpec('user.name', SortDirection.DESC));
+
+    const paginationSpec = new PaginationSpec();
+
+    expect(
+      decodeURI(
+        paginationSpec
+          .setHttpParams(nestedFilterClient.getHttpParams())
+          .toString()
+      )
+    ).toBe(
+      'include=client&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}, {"AND": [{"user": {"GE": {"number": "30000"}}}, {"user": {"LIKE": {"name": "Emil%"}}}, {"user": {"contact": {"LIKE": {"email": "Emil@%"}}}}]}]}&sort=-user.name&page[limit]=10&page[offset]=0'
+    );
+  });
+
+  it('should be create nested filter with default pagination specs', () => {
+    const nestedFilterUser = new NestedFilter(
+      filterArrayUser,
+      NestingOperator.And
+    );
+    const nestedFilterClient = new NestedFilter(
+      filterArrayClient,
+      NestingOperator.Or,
+      nestedFilterUser.buildFilterString(),
+      'client'
+    );
+    nestedFilterClient.sortBy(new SortSpec('user.name', SortDirection.DESC));
+
+    const paginationSpec = new PaginationSpec(3, 20, 50);
+
+    expect(
+      decodeURI(
+        paginationSpec
+          .setHttpParams(nestedFilterClient.getHttpParams())
+          .toString()
+      )
+    ).toBe(
+      'include=client&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}, {"AND": [{"user": {"GE": {"number": "30000"}}}, {"user": {"LIKE": {"name": "Emil%"}}}, {"user": {"contact": {"LIKE": {"email": "Emil@%"}}}}]}]}&sort=-user.name&page[limit]=20&page[offset]=60'
+    );
+
+    // No new instantiation
+    expect(
+      decodeURI(
+        paginationSpec
+          .setHttpParams(nestedFilterClient.getHttpParams())
+          .toString()
+      )
+    ).toBe(
+      'include=client&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}, {"AND": [{"user": {"GE": {"number": "30000"}}}, {"user": {"LIKE": {"name": "Emil%"}}}, {"user": {"contact": {"LIKE": {"email": "Emil@%"}}}}]}]}&sort=-user.name&page[limit]=20&page[offset]=60'
     );
   });
 });
