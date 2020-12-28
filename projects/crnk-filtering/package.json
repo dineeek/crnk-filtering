@@ -6,8 +6,8 @@
     "email": "klicek.dino@gmail.com"
   },
   "peerDependencies": {
-    "@angular/common": ">=8.0.0",
-    "@angular/core": ">=8.0.0"
+    "@angular/common": ">=6.0.0",
+    "@angular/core": ">=6.0.0"
   },
   "dependencies": {},
   "devDependencies": {}
