@@ -19,6 +19,8 @@ export class BasicFilter {
   /**
    *
    * @param filterSpecs - Array of FilterSpec's for creating filter string.
+   *     @param includeResources - Inclusion of related resources - pass single or multiple names of the resources
+   *
    */
   public constructor(
     filterSpecs: FilterSpec | Array<FilterSpec>,
@@ -80,6 +82,11 @@ export class BasicFilter {
     this.sort = getSortingParams(sortSpecs);
   }
 
+  /**
+   * Method `buildStringFilter` creates the whole basic filter string.
+   *
+   * @param httpParams - Http params on which will filter string be putted.
+   */
   private buildStringFilter(httpParams: HttpParams): HttpParams {
     this.filterSpecs.forEach((filterSpec) => {
       if (

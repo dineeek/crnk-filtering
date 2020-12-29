@@ -24,6 +24,8 @@ export class NestedFilter {
    * @param nestingCondition - Conditional nesting operator (`AND`, `OR`, `NOT`) which wraps the whole filter string.
    * By default, operator `AND` is applied.
    * @param innerNestedFilter - Optional, used in caste of nesting `AND`, `OR`, `NOT` operators.
+   * @param includeResources - Inclusion of related resources - pass single or multiple names of the resources
+   *
    */
   public constructor(
     filterSpecs: FilterSpec | Array<FilterSpec>,
