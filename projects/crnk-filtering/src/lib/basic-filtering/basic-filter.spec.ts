@@ -36,8 +36,8 @@ describe('Basic-filtering', () => {
 
   it('should not create filter string with null, undefined and empty values', () => {
     const filterArray = [
-      new FilterSpec('user.name', '    ', FilterOperator.Like),
-      new FilterSpec('user.number', '', FilterOperator.Equals),
+      new FilterSpec('user', '    ', FilterOperator.Like),
+      new FilterSpec('   ', '', FilterOperator.Equals),
       new FilterSpec('user.address.city', null, FilterOperator.Equals),
       new FilterSpec('user.address.zip', undefined, FilterOperator.Equals),
     ];

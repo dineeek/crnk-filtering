@@ -83,8 +83,8 @@ describe('Nested-filtering', () => {
 
   it('should be created only main inner nested filter', () => {
     const filterArray = [
-      new FilterSpec('user.name', '    ', FilterOperator.Like),
-      new FilterSpec('user.contact.email', '', FilterOperator.Like),
+      new FilterSpec('   ', '    ', FilterOperator.Like),
+      new FilterSpec('user', '', FilterOperator.Like),
     ];
 
     const nestedFilterClient = new NestedFilter(
@@ -115,8 +115,8 @@ describe('Nested-filtering', () => {
     );
 
     const filterArrayCar = [
-      new FilterSpec('car.name', '    ', FilterOperator.Like),
-      new FilterSpec('car.company.email', '', FilterOperator.Like),
+      new FilterSpec('  ', '    ', FilterOperator.Like),
+      new FilterSpec('car', '', FilterOperator.Like),
     ];
 
     // empty

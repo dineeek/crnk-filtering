@@ -8,8 +8,20 @@ import { SortSpec } from './sort/sort-spec';
  */
 export function filterArray(filterSpecs: Array<FilterSpec>): Array<FilterSpec> {
   return filterSpecs.filter((filterSpec) => {
-    if (!filterSpec || !filterSpec.isValid()) {
+    if (!filterSpec || !filterSpec.isPathValid()) {
       return false;
+    }
+
+    if (typeof filterSpec.value === 'string') {
+      filterSpec.value = filterSpec.value.trim();
+      return filterSpec.value.length;
+    }
+
+    if (filterSpec.value instanceof Date) {
+      return (
+        !Number.isNaN(filterSpec.value.getDate()) ||
+        !Number.isNaN(filterSpec.value.getFullYear())
+      );
     }
 
     if (filterSpec.value instanceof Array) {
@@ -22,17 +34,9 @@ export function filterArray(filterSpecs: Array<FilterSpec>): Array<FilterSpec> {
         return filterSpec.value.length;
       }
       return filterSpec.value.length;
-    } else if (typeof filterSpec.value === 'string') {
-      filterSpec.value = filterSpec.value.trim();
-      return filterSpec.value.length;
-    } else if (filterSpec.value instanceof Date) {
-      return (
-        !isNaN(filterSpec.value.getDate()) ||
-        !isNaN(filterSpec.value.getFullYear())
-      );
     }
 
-    return filterSpec.isValid();
+    return filterSpec.isValueValid();
   });
 }
 

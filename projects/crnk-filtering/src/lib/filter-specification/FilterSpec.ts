@@ -31,18 +31,23 @@ export class FilterSpec {
   }
 
   /**
-   * Method `isValid` validates filter by its path and value.
+   * Method `isPathValid` validates filter by its path.
    *
    */
-  public isValid(): boolean {
+  public isPathValid(): boolean {
     this.pathSpec = this.pathSpec.trim();
+    return !!this.pathSpec;
+  }
 
-    if (!this.pathSpec) {
-      return false;
-    }
-
+  /**
+   * Method `isValueValid` validates filter by its value.
+   *
+   */
+  public isValueValid(): boolean {
     if (
-      (typeof this.value !== 'boolean' && !this.value) ||
+      this.value === null ||
+      this.value === undefined ||
+      this.value === '' ||
       Number.isNaN(this.value)
     ) {
       return false;
