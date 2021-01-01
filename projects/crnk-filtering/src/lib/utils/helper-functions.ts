@@ -7,32 +7,36 @@ import { SortSpec } from './sort/sort-spec';
  * @param filterSpecs - Array of FilterSpec which values goes through filtering.
  */
 export function filterArray(filterSpecs: Array<FilterSpec>): Array<FilterSpec> {
-  const filteredArray = filterSpecs.filter((filterSpec) => {
+  return filterSpecs.filter((filterSpec) => {
     if (!filterSpec) {
-      return null;
-    } else if (filterSpec.value instanceof Array) {
-      filterSpec.value = compact(filterSpec.value);
-      if (isArrayFullOfStrings(filterSpec.value)) {
-        const trimmedArray = compact(getTrimmedStringsArray(filterSpec.value));
-        return trimmedArray.length ? (filterSpec.value = trimmedArray) : null;
-      } else if (isArrayContainingString(filterSpec.value)) {
-        const trimmedArray = compact(trimStringsInsideArray(filterSpec.value));
-        return trimmedArray.length ? (filterSpec.value = trimmedArray) : null;
-      }
-    } else if (typeof filterSpec.value === 'string') {
-      const trimmedValue = filterSpec.value.trim();
-      return trimmedValue.length ? (filterSpec.value = trimmedValue) : null;
-    } else if (filterSpec.value instanceof Date) {
-      return !isNaN(filterSpec.value.getDate()) ||
-        !isNaN(filterSpec.value.getFullYear())
-        ? filterSpec.value
-        : null;
+      return false;
     }
 
-    return filterSpec.isValid() ? filterSpec : null;
-  });
+    if (filterSpec.value instanceof Array) {
+      filterSpec.value = compact(filterSpec.value);
+      if (isArrayFullOfStrings(filterSpec.value)) {
+        filterSpec.value = compact(getTrimmedStringsArray(filterSpec.value));
+        return filterSpec.value.length;
+      } else if (isArrayContainingString(filterSpec.value)) {
+        filterSpec.value = compact(trimStringsInsideArray(filterSpec.value));
+        return filterSpec.value.length;
+      }
+    }
 
-  return filteredArray;
+    if (typeof filterSpec.value === 'string') {
+      filterSpec.value = filterSpec.value.trim();
+      return filterSpec.value.length;
+    }
+
+    if (filterSpec.value instanceof Date) {
+      return (
+        !isNaN(filterSpec.value.getDate()) ||
+        !isNaN(filterSpec.value.getFullYear())
+      );
+    }
+
+    return filterSpec.isValid();
+  });
 }
 
 /**
@@ -42,7 +46,11 @@ export function filterArray(filterSpecs: Array<FilterSpec>): Array<FilterSpec> {
  */
 function compact(arr: any[]): any[] {
   return arr.filter(
-    (element) => element !== null && element !== undefined && element !== ''
+    (element) =>
+      element !== null &&
+      element !== undefined &&
+      element !== '' &&
+      !Number.isNaN(element)
   );
 }
 
@@ -51,7 +59,7 @@ function compact(arr: any[]): any[] {
  *
  * @param arr - Array to check if all elements are string.
  */
-export function isArrayFullOfStrings(arr: any[]): boolean {
+function isArrayFullOfStrings(arr: any[]): boolean {
   return arr.every((element: any) => typeof element === 'string');
 }
 
@@ -79,23 +87,12 @@ function getTrimmedStringsArray(arr: string[]): string[] {
  * @param arr - Array to search for strings values to re
  */
 function trimStringsInsideArray(arr: any[]): any[] {
-  const trimmedArray = arr.filter((element: string) => {
+  return arr.map((element: any) => {
     if (typeof element === 'string') {
       element = element.trim();
     }
     return element;
   });
-  return trimmedArray;
-}
-
-/**
- * Helper function `isArrayContainingString` determines if array has empty string elements.
- *
- * @param arr - Array to check if all string elements are empty.
- */
-export function isArrayFullOfEmptyStrings(arr: any[]): boolean {
-  const trimmedStrings = getTrimmedStringsArray(arr);
-  return trimmedStrings.join('') ? false : true;
 }
 
 /**

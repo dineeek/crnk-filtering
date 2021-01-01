@@ -50,7 +50,7 @@ describe('Basic-filtering', () => {
     const filterArray = [
       new FilterSpec('user.name', '    ', FilterOperator.Like),
       new FilterSpec('user.number', '132312', FilterOperator.Equals),
-      new FilterSpec('user.address.city', null, FilterOperator.Equals),
+      new FilterSpec('user.address.city', NaN, FilterOperator.Equals),
       new FilterSpec('user.address.zip', 32115, FilterOperator.Equals),
     ];
     const basicFilter = new BasicFilter(filterArray).getHttpParams();
@@ -65,7 +65,7 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.name', '    ', FilterOperator.Like),
       new FilterSpec(
         'user.number',
-        [13513, undefined, 23151, , 21512, null],
+        [13513, undefined, 23151, , 21512, null, NaN],
         FilterOperator.Equals
       ),
       new FilterSpec('user.address.city', ['Zurich', 'Ljubljana', 'Novi Sad']),

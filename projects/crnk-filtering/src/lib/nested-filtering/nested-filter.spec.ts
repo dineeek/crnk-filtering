@@ -155,8 +155,12 @@ describe('Nested-filtering', () => {
 
   it('should be empty filter string', () => {
     const filterArray = [
-      new FilterSpec('user.name', '    ', FilterOperator.Like),
-      new FilterSpec('user.contact.email', '', FilterOperator.Like),
+      new FilterSpec(' ', '    ', FilterOperator.Like),
+      new FilterSpec(
+        'user.contact.email',
+        ['', '  ', '    '],
+        FilterOperator.Like
+      ),
     ];
     const nestedFilter = new NestedFilter(filterArray).getHttpParams();
 
@@ -169,7 +173,7 @@ describe('Nested-filtering', () => {
       new FilterSpec('user.contact.email', 'Emil@', FilterOperator.Like),
       new FilterSpec(
         'user.number',
-        [15153, 651515, '  ', 4121, , '', null],
+        [15153, 651515, '  ', 4121, , '', NaN, null],
         FilterOperator.Equals
       ),
     ];
