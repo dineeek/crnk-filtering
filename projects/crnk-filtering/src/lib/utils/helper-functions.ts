@@ -37,7 +37,7 @@ export function filterArray(filterSpecs: Array<FilterSpec>): Array<FilterSpec> {
 }
 
 /**
- * Helper function `compact` removes null, undefined and '' from an array.
+ * Helper function `compact` removes null, undefined, '' and NaN values from an array.
  *
  * @param arr - Array to perform action.
  */
