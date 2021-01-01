@@ -26,12 +26,17 @@ export class PaginationSpec {
   }
 
   setHttpParams(httpParams: HttpParams): HttpParams {
-    httpParams = httpParams.set('page[limit]', String(this.pageEvent.pageSize));
+    if (this.pageEvent) {
+      httpParams = httpParams.set(
+        'page[limit]',
+        String(this.pageEvent.pageSize)
+      );
 
-    httpParams = httpParams.set(
-      'page[offset]',
-      String(this.pageEvent.pageIndex * this.pageEvent.pageSize)
-    );
+      httpParams = httpParams.set(
+        'page[offset]',
+        String(this.pageEvent.pageIndex * this.pageEvent.pageSize)
+      );
+    }
 
     return httpParams;
   }

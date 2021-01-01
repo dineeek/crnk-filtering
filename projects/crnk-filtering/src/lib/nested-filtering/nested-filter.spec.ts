@@ -27,6 +27,21 @@ describe('Nested-filtering', () => {
     );
   });
 
+  it('should be created nested filter string with date filter', () => {
+    const nestedFilter = new NestedFilter([
+      new FilterSpec('auto', 'Mazda       '),
+      new FilterSpec(
+        'registration',
+        new Date('2012-07-28').toISOString(),
+        FilterOperator.Equals
+      ),
+    ]).getHttpParams();
+
+    expect(decodeURI(nestedFilter.toString())).toBe(
+      'filter={"AND": [{"EQ": {"auto": "Mazda"}}, {"EQ": {"registration": "2012-07-28T00:00:00.000Z"}}]}'
+    );
+  });
+
   it('should be created nested filter string', () => {
     const nestedFilter = new NestedFilter(filterArrayUser);
 

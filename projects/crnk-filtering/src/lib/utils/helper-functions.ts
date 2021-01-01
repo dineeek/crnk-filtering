@@ -13,15 +13,20 @@ export function filterArray(filterSpecs: Array<FilterSpec>): Array<FilterSpec> {
     } else if (filterSpec.value instanceof Array) {
       filterSpec.value = compact(filterSpec.value);
       if (isArrayFullOfStrings(filterSpec.value)) {
-        // Trimming strings if they exists in array
-        filterSpec.value = compact(getTrimmedStringsArray(filterSpec.value));
+        const trimmedArray = compact(getTrimmedStringsArray(filterSpec.value));
+        return trimmedArray.length ? (filterSpec.value = trimmedArray) : null;
       } else if (isArrayContainingString(filterSpec.value)) {
-        filterSpec.value = compact(trimStringsInsideArray(filterSpec.value));
+        const trimmedArray = compact(trimStringsInsideArray(filterSpec.value));
+        return trimmedArray.length ? (filterSpec.value = trimmedArray) : null;
       }
     } else if (typeof filterSpec.value === 'string') {
-      // Trimming single string value
       const trimmedValue = filterSpec.value.trim();
-      filterSpec.value = trimmedValue.length ? trimmedValue : null;
+      return trimmedValue.length ? (filterSpec.value = trimmedValue) : null;
+    } else if (filterSpec.value instanceof Date) {
+      return !isNaN(filterSpec.value.getDate()) ||
+        !isNaN(filterSpec.value.getFullYear())
+        ? filterSpec.value
+        : null;
     }
 
     return filterSpec.isValid() ? filterSpec : null;
@@ -130,6 +135,10 @@ function filterEmptyStringValues(arr: string[]): string[] {
 export function getSortingParams(
   sortSpecs: SortSpec | Array<SortSpec>
 ): string | null {
+  if (!sortSpecs) {
+    return null;
+  }
+
   if (sortSpecs instanceof Array) {
     let sortParams: string[] = [];
 

@@ -1,7 +1,5 @@
 import { FilterOperator, FilterOperatorType } from '../utils/crnk-operators';
 import {
-  isArrayFullOfEmptyStrings,
-  isArrayFullOfStrings,
   setQuotersAndPercentageSignOnLikeValues,
   setQuotersOnValues,
 } from '../utils/helper-functions';
@@ -33,42 +31,14 @@ export class FilterSpec {
   }
 
   /**
-   * Method `isValid` validates filter specs by removing those who does not meet specified condition.
+   * Method `isValid` validates filter by its path and value.
    *
-   * The filter path and value needs to contain some value. If the filter value is instance of array then it checks for empty strings.
-   * Also, if the filter has one string value then it checks if it is empty.
-   * There is also validation for Date values and filter operators.
    */
   public isValid(): boolean {
     this.pathSpec = this.pathSpec.trim();
 
     if (!this.pathSpec || !this.value || Number.isNaN(this.value)) {
       return false;
-    }
-
-    if (this.value instanceof Array) {
-      if (!this.value.length) {
-        return false;
-      } else if (isArrayFullOfStrings(this.value)) {
-        if (isArrayFullOfEmptyStrings(this.value)) {
-          return false;
-        }
-      }
-    }
-
-    if (typeof this.value === 'string') {
-      if (!this.value.trim().length) {
-        return false;
-      }
-    }
-
-    if (this.value instanceof Date) {
-      if (
-        Number.isNaN(this.value.getDate()) ||
-        Number.isNaN(this.value.getFullYear())
-      ) {
-        return false;
-      }
     }
 
     return true;
