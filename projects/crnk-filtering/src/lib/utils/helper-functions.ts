@@ -8,7 +8,7 @@ import { SortSpec } from './sort/sort-spec';
  */
 export function filterArray(filterSpecs: Array<FilterSpec>): Array<FilterSpec> {
   return filterSpecs.filter((filterSpec) => {
-    if (!filterSpec) {
+    if (!filterSpec || !filterSpec.isValid()) {
       return false;
     }
 
@@ -21,14 +21,10 @@ export function filterArray(filterSpecs: Array<FilterSpec>): Array<FilterSpec> {
         filterSpec.value = compact(trimStringsInsideArray(filterSpec.value));
         return filterSpec.value.length;
       }
-    }
-
-    if (typeof filterSpec.value === 'string') {
+    } else if (typeof filterSpec.value === 'string') {
       filterSpec.value = filterSpec.value.trim();
       return filterSpec.value.length;
-    }
-
-    if (filterSpec.value instanceof Date) {
+    } else if (filterSpec.value instanceof Date) {
       return (
         !isNaN(filterSpec.value.getDate()) ||
         !isNaN(filterSpec.value.getFullYear())
