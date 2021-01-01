@@ -52,11 +52,13 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.number', '132312', FilterOperator.Equals),
       new FilterSpec('user.address.city', NaN, FilterOperator.Equals),
       new FilterSpec('user.address.zip', 32115, FilterOperator.Equals),
+      new FilterSpec('insured', false, FilterOperator.Equals),
+      new FilterSpec('firstOwner', null, FilterOperator.Equals),
     ];
     const basicFilter = new BasicFilter(filterArray).getHttpParams();
 
     expect(decodeURI(basicFilter.toString())).toBe(
-      'filter[user.number][EQ]=132312&filter[user.address.zip][EQ]=32115'
+      'filter[user.number][EQ]=132312&filter[user.address.zip][EQ]=32115&filter[insured][EQ]=false'
     );
   });
 

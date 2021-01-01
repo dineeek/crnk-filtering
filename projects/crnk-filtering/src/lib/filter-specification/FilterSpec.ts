@@ -37,7 +37,14 @@ export class FilterSpec {
   public isValid(): boolean {
     this.pathSpec = this.pathSpec.trim();
 
-    if (!this.pathSpec || !this.value || Number.isNaN(this.value)) {
+    if (!this.pathSpec) {
+      return false;
+    }
+
+    if (
+      (typeof this.value !== 'boolean' && !this.value) ||
+      Number.isNaN(this.value)
+    ) {
       return false;
     }
 

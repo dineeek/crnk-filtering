@@ -21,6 +21,7 @@ export function filterArray(filterSpecs: Array<FilterSpec>): Array<FilterSpec> {
         filterSpec.value = compact(trimStringsInsideArray(filterSpec.value));
         return filterSpec.value.length;
       }
+      return filterSpec.value.length;
     } else if (typeof filterSpec.value === 'string') {
       filterSpec.value = filterSpec.value.trim();
       return filterSpec.value.length;

@@ -35,10 +35,12 @@ describe('Nested-filtering', () => {
         new Date('2012-07-28').toISOString(),
         FilterOperator.Equals
       ),
+      new FilterSpec('insured', false, FilterOperator.Equals),
+      new FilterSpec('firstOwner', true, FilterOperator.Equals),
     ]).getHttpParams();
 
     expect(decodeURI(nestedFilter.toString())).toBe(
-      'filter={"AND": [{"EQ": {"auto": "Mazda"}}, {"EQ": {"registration": "2012-07-28T00:00:00.000Z"}}]}'
+      'filter={"AND": [{"EQ": {"auto": "Mazda"}}, {"EQ": {"registration": "2012-07-28T00:00:00.000Z"}}, {"EQ": {"insured": "false"}}, {"EQ": {"firstOwner": "true"}}]}'
     );
   });
 
