@@ -97,17 +97,17 @@ function trimStringsInsideArray(arr: any[]): any[] {
 }
 
 /**
- * Helper function `getIncludedResources` returns included resources as a single string value.
+ * Helper function `getStringParams` returns included resources as a single string value.
  *
- * @param includedResources - One or many included resources of relationship.
+ * @param stringParams - One or many included string params.
  */
-export function getIncludedResources(
-  includedResources: string | Array<string>
+export function getStringParams(
+  stringParams: string | Array<string>
 ): string | null {
   const resources =
-    includedResources instanceof Array
-      ? filterEmptyStringValues(includedResources)
-      : filterEmptyStringValues(new Array<string>(includedResources));
+    stringParams instanceof Array
+      ? filterEmptyStringValues(stringParams)
+      : filterEmptyStringValues(new Array<string>(stringParams));
 
   if (!resources.length) {
     return null;

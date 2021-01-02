@@ -257,4 +257,69 @@ describe('Basic-filtering', () => {
       'include=client&filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=-client.name&page[limit]=20&page[offset]=40'
     );
   });
+
+  it('should create filter string with single sparse fieldset', () => {
+    const filterArray = [
+      new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
+      new FilterSpec('user.number', '14123', FilterOperator.Equals),
+    ];
+    const basicFilter = new BasicFilter(filterArray, 'client', 'user.name');
+    basicFilter.sortBy(new SortSpec('client.name', SortDirection.DESC));
+
+    const paginationSpec = new PaginationSpec();
+
+    expect(
+      decodeURI(
+        paginationSpec.setHttpParams(basicFilter.getHttpParams()).toString()
+      )
+    ).toBe(
+      'include=client&filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&fields=user.name&sort=-client.name&page[limit]=10&page[offset]=0'
+    );
+  });
+
+  it('should create filter string with multiple sparse fieldset', () => {
+    const filterArray = [
+      new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
+      new FilterSpec('user.number', '14123', FilterOperator.Equals),
+    ];
+    const basicFilter = new BasicFilter(filterArray, 'client', [
+      'user.name',
+      'user.number',
+    ]);
+    basicFilter.sortBy(new SortSpec('client.name', SortDirection.DESC));
+
+    const paginationSpec = new PaginationSpec();
+
+    expect(
+      decodeURI(
+        paginationSpec.setHttpParams(basicFilter.getHttpParams()).toString()
+      )
+    ).toBe(
+      'include=client&filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&fields=user.name,user.number&sort=-client.name&page[limit]=10&page[offset]=0'
+    );
+  });
+
+  it('should create filter string with multiple sparse fieldset while some are empty strings', () => {
+    const filterArray = [
+      new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
+      new FilterSpec('user.number', '14123', FilterOperator.Equals),
+    ];
+    const basicFilter = new BasicFilter(filterArray, 'client', [
+      'user.name',
+      '  ',
+      'user.number',
+      '  ',
+    ]);
+    basicFilter.sortBy(new SortSpec('client.name', SortDirection.DESC));
+
+    const paginationSpec = new PaginationSpec();
+
+    expect(
+      decodeURI(
+        paginationSpec.setHttpParams(basicFilter.getHttpParams()).toString()
+      )
+    ).toBe(
+      'include=client&filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&fields=user.name,user.number&sort=-client.name&page[limit]=10&page[offset]=0'
+    );
+  });
 });

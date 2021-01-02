@@ -3,8 +3,8 @@ import { FilterSpec } from '../filter-specification/FilterSpec';
 import { FilterOperator } from '../utils/crnk-operators';
 import {
   filterArray,
-  getIncludedResources,
   getSortingParams,
+  getStringParams,
 } from '../utils/helper-functions';
 import { SortSpec } from '../utils/sort/sort-spec';
 
@@ -14,17 +14,18 @@ import { SortSpec } from '../utils/sort/sort-spec';
 export class BasicFilter {
   private sort: string | null;
   private filterSpecs: Array<FilterSpec>;
-  private includedResources: string | null; // Inclusion of Related Resources
-
+  private relatedResources: string | null; // Inclusion of Related Resources
+  private sparseFieldsets: string | null; // Information about fields to include in the response
   /**
    *
    * @param filterSpecs - Array of FilterSpec's for creating filter string.
-   *     @param includeResources - Inclusion of related resources - pass single or multiple names of the resources
-   *
+   * @param relatedResources - Inclusion of related resources - pass single or multiple names of the resources
+   * @param sparseFieldsets - Information about fields to include in the response
    */
   public constructor(
     filterSpecs: FilterSpec | Array<FilterSpec>,
-    includeResources?: string | Array<string>
+    relatedResources?: string | Array<string>,
+    sparseFieldsets?: string | Array<string>
   ) {
     this.sort = null;
 
@@ -33,8 +34,12 @@ export class BasicFilter {
         ? filterArray(filterSpecs)
         : filterArray(new Array<FilterSpec>(filterSpecs));
 
-    this.includedResources = includeResources
-      ? getIncludedResources(includeResources)
+    this.relatedResources = relatedResources
+      ? getStringParams(relatedResources)
+      : null;
+
+    this.sparseFieldsets = sparseFieldsets
+      ? getStringParams(sparseFieldsets)
       : null;
   }
 
@@ -51,12 +56,16 @@ export class BasicFilter {
    * @param httpParams - HTTP parameters.
    */
   private setHttpParams(httpParams: HttpParams): HttpParams {
-    if (this.includedResources) {
-      httpParams = httpParams.set('include', this.includedResources);
+    if (this.relatedResources) {
+      httpParams = httpParams.set('include', this.relatedResources);
     }
 
     if (this.filterSpecs.length) {
       httpParams = this.buildStringFilter(httpParams);
+    }
+
+    if (this.sparseFieldsets) {
+      httpParams = httpParams.set('fields', this.sparseFieldsets);
     }
 
     if (this.sort) {

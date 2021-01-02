@@ -467,4 +467,58 @@ describe('Nested-filtering', () => {
       'include=client&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}, {"AND": [{"user": {"GE": {"number": "30000"}}}, {"user": {"LIKE": {"name": "Emil%"}}}, {"user": {"contact": {"LIKE": {"email": "Emil@%"}}}}]}]}&sort=-user.name&page[limit]=20&page[offset]=60'
     );
   });
+
+  it('should be created nested filter string with single sparse fieldset', () => {
+    const nestedFilter = new NestedFilter(
+      filterArrayClient,
+      NestingOperator.Or,
+      null,
+      'client',
+      'client.id'
+    );
+    nestedFilter.sortBy([
+      new SortSpec('  ', SortDirection.ASC),
+      new SortSpec(' ', SortDirection.DESC),
+    ]);
+
+    expect(decodeURI(nestedFilter.getHttpParams().toString())).toBe(
+      'include=client&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}&fields=client.id'
+    );
+  });
+
+  it('should be created nested filter string with multiple sparse fieldsets', () => {
+    const nestedFilter = new NestedFilter(
+      filterArrayClient,
+      NestingOperator.Or,
+      null,
+      'client',
+      ['client.id', 'client.name']
+    );
+    nestedFilter.sortBy([
+      new SortSpec('  ', SortDirection.ASC),
+      new SortSpec(' ', SortDirection.DESC),
+    ]);
+
+    expect(decodeURI(nestedFilter.getHttpParams().toString())).toBe(
+      'include=client&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}&fields=client.id,client.name'
+    );
+  });
+
+  it('should be created nested filter string with multiple sparse fieldsets while some are empty strings', () => {
+    const nestedFilter = new NestedFilter(
+      filterArrayClient,
+      NestingOperator.Or,
+      null,
+      'client',
+      ['client.id', '   ', 'client.name', '']
+    );
+    nestedFilter.sortBy([
+      new SortSpec('  ', SortDirection.ASC),
+      new SortSpec(' ', SortDirection.DESC),
+    ]);
+
+    expect(decodeURI(nestedFilter.getHttpParams().toString())).toBe(
+      'include=client&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}&fields=client.id,client.name'
+    );
+  });
 });

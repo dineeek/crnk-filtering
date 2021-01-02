@@ -4,8 +4,8 @@ import { FilterSpec } from '../filter-specification/FilterSpec';
 import { NestingOperator, NestingOperatorType } from '../utils/crnk-operators';
 import {
   filterArray,
-  getIncludedResources,
   getSortingParams,
+  getStringParams,
 } from '../utils/helper-functions';
 
 /**
@@ -16,7 +16,8 @@ export class NestedFilter {
   private filterSpecs: Array<FilterSpec>;
   private nestingCondition: NestingOperatorType;
   private innerNestedFilter: string | null;
-  private includedResources: string | null; // Inclusion of Related Resources
+  private relatedResources: string | null; // Inclusion of Related Resources
+  private sparseFieldsets: string | null; // Information about fields to include in the response
 
   /**
    *
@@ -24,14 +25,16 @@ export class NestedFilter {
    * @param nestingCondition - Conditional nesting operator (`AND`, `OR`, `NOT`) which wraps the whole filter string.
    * By default, operator `AND` is applied.
    * @param innerNestedFilter - Optional, used in caste of nesting `AND`, `OR`, `NOT` operators.
-   * @param includeResources - Inclusion of related resources - pass single or multiple names of the resources
+   * @param relatedResources - Inclusion of related resources - pass single or multiple names of the resources
+   * @param sparseFieldsets - Information about fields to include in the response
    *
    */
   public constructor(
     filterSpecs: FilterSpec | Array<FilterSpec>,
     nestingCondition?: NestingOperatorType,
     innerNestedFilter?: string | null,
-    includeResources?: string | Array<string>
+    relatedResources?: string | Array<string>,
+    sparseFieldsets?: string | Array<string>
   ) {
     this.sort = null;
 
@@ -46,8 +49,12 @@ export class NestedFilter {
 
     this.innerNestedFilter = innerNestedFilter ? innerNestedFilter : null;
 
-    this.includedResources = includeResources
-      ? getIncludedResources(includeResources)
+    this.relatedResources = relatedResources
+      ? getStringParams(relatedResources)
+      : null;
+
+    this.sparseFieldsets = sparseFieldsets
+      ? getStringParams(sparseFieldsets)
       : null;
   }
 
@@ -64,8 +71,8 @@ export class NestedFilter {
    * @param httpParams - HTTP parameters.
    */
   private setHttpParams(httpParams: HttpParams): HttpParams {
-    if (this.includedResources) {
-      httpParams = httpParams.set('include', this.includedResources);
+    if (this.relatedResources) {
+      httpParams = httpParams.set('include', this.relatedResources);
     }
 
     if (this.filterSpecs.length) {
@@ -73,6 +80,10 @@ export class NestedFilter {
     } else if (!this.filterSpecs.length && this.innerNestedFilter) {
       // Nested inner filter string becomes the main filter -case when main filter is non existing because of its values
       httpParams = httpParams.set('filter', this.innerNestedFilter);
+    }
+
+    if (this.sparseFieldsets) {
+      httpParams = httpParams.set('fields', this.sparseFieldsets);
     }
 
     if (this.sort) {
