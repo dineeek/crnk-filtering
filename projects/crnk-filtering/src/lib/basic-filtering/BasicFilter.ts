@@ -6,6 +6,7 @@ import {
   getSortingParams,
   getStringParams,
 } from '../utils/helper-functions';
+import { BasicQueryParameters } from '../utils/query-params';
 import { SortSpec } from '../utils/sort/sort-spec';
 
 /**
@@ -22,24 +23,20 @@ export class BasicFilter {
    * @param relatedResources - Inclusion of related resources - pass single or multiple names of the resources
    * @param sparseFieldsets - Information about fields to include in the response
    */
-  public constructor(
-    filterSpecs: FilterSpec | Array<FilterSpec>,
-    relatedResources?: string | Array<string>,
-    sparseFieldsets?: string | Array<string>
-  ) {
+  public constructor(queryParams: BasicQueryParameters) {
     this.sort = null;
 
     this.filterSpecs =
-      filterSpecs instanceof Array
-        ? filterArray(filterSpecs)
-        : filterArray(new Array<FilterSpec>(filterSpecs));
+      queryParams.filterSpecs instanceof Array
+        ? filterArray(queryParams.filterSpecs)
+        : filterArray(new Array<FilterSpec>(queryParams.filterSpecs));
 
-    this.relatedResources = relatedResources
-      ? getStringParams(relatedResources)
+    this.relatedResources = queryParams.relatedResources
+      ? getStringParams(queryParams.relatedResources)
       : null;
 
-    this.sparseFieldsets = sparseFieldsets
-      ? getStringParams(sparseFieldsets)
+    this.sparseFieldsets = queryParams.sparseFieldsets
+      ? getStringParams(queryParams.sparseFieldsets)
       : null;
   }
 

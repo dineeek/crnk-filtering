@@ -18,9 +18,9 @@ const filterArrayClient = [
 
 describe('Nested-filtering', () => {
   it('should be created nested filter string with single filter', () => {
-    const nestedFilter = new NestedFilter(
-      new FilterSpec('auto', 'Mazda       ')
-    ).getHttpParams();
+    const nestedFilter = new NestedFilter({
+      filterSpecs: new FilterSpec('auto', 'Mazda       '),
+    }).getHttpParams();
 
     expect(decodeURI(nestedFilter.toString())).toBe(
       'filter={"EQ": {"auto": "Mazda"}}'
@@ -28,16 +28,18 @@ describe('Nested-filtering', () => {
   });
 
   it('should be created nested filter string with date filter', () => {
-    const nestedFilter = new NestedFilter([
-      new FilterSpec('auto', 'Mazda       '),
-      new FilterSpec(
-        'registration',
-        new Date('2012-07-28').toISOString(),
-        FilterOperator.Equals
-      ),
-      new FilterSpec('insured', false, FilterOperator.Equals),
-      new FilterSpec('firstOwner', true, FilterOperator.Equals),
-    ]).getHttpParams();
+    const nestedFilter = new NestedFilter({
+      filterSpecs: [
+        new FilterSpec('auto', 'Mazda       '),
+        new FilterSpec(
+          'registration',
+          new Date('2012-07-28').toISOString(),
+          FilterOperator.Equals
+        ),
+        new FilterSpec('insured', false, FilterOperator.Equals),
+        new FilterSpec('firstOwner', true, FilterOperator.Equals),
+      ],
+    }).getHttpParams();
 
     expect(decodeURI(nestedFilter.toString())).toBe(
       'filter={"AND": [{"EQ": {"auto": "Mazda"}}, {"EQ": {"registration": "2012-07-28T00:00:00.000Z"}}, {"EQ": {"insured": "false"}}, {"EQ": {"firstOwner": "true"}}]}'
@@ -45,7 +47,7 @@ describe('Nested-filtering', () => {
   });
 
   it('should be created nested filter string', () => {
-    const nestedFilter = new NestedFilter(filterArrayUser);
+    const nestedFilter = new NestedFilter({ filterSpecs: filterArrayUser });
 
     expect(decodeURI(nestedFilter.getHttpParams().toString())).toBe(
       'filter={"AND": [{"user": {"GE": {"number": "30000"}}}, {"user": {"LIKE": {"name": "Emil%"}}}, {"user": {"contact": {"LIKE": {"email": "Emil@%"}}}}]}'
@@ -58,7 +60,9 @@ describe('Nested-filtering', () => {
   });
 
   it('should be created nested filter string with default operator', () => {
-    const nestedFilter = new NestedFilter(filterArrayClient).getHttpParams();
+    const nestedFilter = new NestedFilter({
+      filterSpecs: filterArrayClient,
+    }).getHttpParams();
 
     expect(decodeURI(nestedFilter.toString())).toBe(
       'filter={"AND": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
@@ -66,15 +70,15 @@ describe('Nested-filtering', () => {
   });
 
   it('should be create nested filter inside another filter string', () => {
-    const nestedFilterUser = new NestedFilter(
-      filterArrayUser,
-      NestingOperator.And
-    );
-    const nestedFilterClient = new NestedFilter(
-      filterArrayClient,
-      NestingOperator.Or,
-      nestedFilterUser.buildFilterString()
-    ).getHttpParams();
+    const nestedFilterUser = new NestedFilter({
+      filterSpecs: filterArrayUser,
+      nestingCondition: NestingOperator.And,
+    });
+    const nestedFilterClient = new NestedFilter({
+      filterSpecs: filterArrayClient,
+      nestingCondition: NestingOperator.Or,
+      innerNestedFilter: nestedFilterUser.buildFilterString(),
+    }).getHttpParams();
 
     expect(decodeURI(nestedFilterClient.toString())).toBe(
       'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}, {"AND": [{"user": {"GE": {"number": "30000"}}}, {"user": {"LIKE": {"name": "Emil%"}}}, {"user": {"contact": {"LIKE": {"email": "Emil@%"}}}}]}]}'
@@ -87,15 +91,15 @@ describe('Nested-filtering', () => {
       new FilterSpec('user', '', FilterOperator.Like),
     ];
 
-    const nestedFilterClient = new NestedFilter(
-      filterArrayClient,
-      NestingOperator.Or
-    );
-    const nestedFilterUser = new NestedFilter(
-      filterArray,
-      NestingOperator.And,
-      nestedFilterClient.buildFilterString()
-    ).getHttpParams();
+    const nestedFilterClient = new NestedFilter({
+      filterSpecs: filterArrayClient,
+      nestingCondition: NestingOperator.Or,
+    });
+    const nestedFilterUser = new NestedFilter({
+      filterSpecs: filterArray,
+      nestingCondition: NestingOperator.And,
+      innerNestedFilter: nestedFilterClient.buildFilterString(),
+    }).getHttpParams();
 
     expect(decodeURI(nestedFilterUser.toString())).toBe(
       'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
@@ -109,10 +113,10 @@ describe('Nested-filtering', () => {
     ];
 
     // not empty
-    const nestedFilterMoto = new NestedFilter(
-      filterArrayMoto,
-      NestingOperator.And
-    );
+    const nestedFilterMoto = new NestedFilter({
+      filterSpecs: filterArrayMoto,
+      nestingCondition: NestingOperator.And,
+    });
 
     const filterArrayCar = [
       new FilterSpec('  ', '    ', FilterOperator.Like),
@@ -120,18 +124,18 @@ describe('Nested-filtering', () => {
     ];
 
     // empty
-    const nestedFilterCar = new NestedFilter(
-      filterArrayCar,
-      NestingOperator.And,
-      nestedFilterMoto.buildFilterString()
-    );
+    const nestedFilterCar = new NestedFilter({
+      filterSpecs: filterArrayCar,
+      nestingCondition: NestingOperator.And,
+      innerNestedFilter: nestedFilterMoto.buildFilterString(),
+    });
 
     // not empty
-    const nestedFilterClient = new NestedFilter(
-      filterArrayClient,
-      NestingOperator.Or,
-      nestedFilterCar.buildFilterString()
-    );
+    const nestedFilterClient = new NestedFilter({
+      filterSpecs: filterArrayClient,
+      nestingCondition: NestingOperator.Or,
+      innerNestedFilter: nestedFilterCar.buildFilterString(),
+    });
 
     const filterArrayUsers = [
       new FilterSpec('user.name', null, FilterOperator.Like),
@@ -139,11 +143,11 @@ describe('Nested-filtering', () => {
     ];
 
     // empty
-    const nestedFilterUsers = new NestedFilter(
-      filterArrayUsers,
-      NestingOperator.And,
-      nestedFilterClient.buildFilterString()
-    );
+    const nestedFilterUsers = new NestedFilter({
+      filterSpecs: filterArrayUsers,
+      nestingCondition: NestingOperator.And,
+      innerNestedFilter: nestedFilterClient.buildFilterString(),
+    });
 
     expect(decodeURI(nestedFilterUsers.getHttpParams().toString())).toBe(
       'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}, {"AND": [{"bike": {"LIKE": {"name": "Suz%"}}}, {"bike": {"company": {"LIKE": {"email": "Suzuki%"}}}}]}]}'
@@ -164,7 +168,9 @@ describe('Nested-filtering', () => {
         FilterOperator.Like
       ),
     ];
-    const nestedFilter = new NestedFilter(filterArray).getHttpParams();
+    const nestedFilter = new NestedFilter({
+      filterSpecs: filterArray,
+    }).getHttpParams();
 
     expect(decodeURI(nestedFilter.toString())).toBe('');
   });
@@ -179,7 +185,9 @@ describe('Nested-filtering', () => {
         FilterOperator.Equals
       ),
     ];
-    const nestedFilter = new NestedFilter(filterArray).getHttpParams();
+    const nestedFilter = new NestedFilter({
+      filterSpecs: filterArray,
+    }).getHttpParams();
 
     expect(decodeURI(nestedFilter.toString())).toBe(
       'filter={"AND": [{"user": {"EQ": {"id": ["1", "2", "3"]}}}, {"user": {"contact": {"LIKE": {"email": "Emil@%"}}}}, {"user": {"EQ": {"number": ["15153", "651515", "4121"]}}}]}'
@@ -196,13 +204,13 @@ describe('Nested-filtering', () => {
         FilterOperator.Equals
       ),
     ];
-    const nestedFilter = new NestedFilter(filterArray);
+    const nestedFilter = new NestedFilter({ filterSpecs: filterArray });
 
-    const nestedFilterClient = new NestedFilter(
-      filterArrayClient,
-      NestingOperator.Or,
-      nestedFilter.buildFilterString()
-    );
+    const nestedFilterClient = new NestedFilter({
+      filterSpecs: filterArrayClient,
+      nestingCondition: NestingOperator.Or,
+      innerNestedFilter: nestedFilter.buildFilterString(),
+    });
 
     expect(decodeURI(nestedFilterClient.getHttpParams().toString())).toBe(
       'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}, {"AND": [{"user": {"EQ": {"id": ["1", "2", "3"]}}}, {"user": {"contact": {"LIKE": {"email": "Emil@%"}}}}, {"user": {"EQ": {"code": ["15153", "651515", "4121", "Toyota"]}}}]}]}'
@@ -227,7 +235,9 @@ describe('Nested-filtering', () => {
         FilterOperator.Like
       ),
     ];
-    const nestedFilter = new NestedFilter(filterArray).getHttpParams();
+    const nestedFilter = new NestedFilter({
+      filterSpecs: filterArray,
+    }).getHttpParams();
 
     expect(decodeURI(nestedFilter.toString())).toBe(
       'filter={"AND": [{"user": {"EQ": {"id": ["125", "123", "512"]}}}, {"user": {"LIKE": {"name": ["Toy%", "Maz%", "Jagu%"]}}}]}'
@@ -239,7 +249,9 @@ describe('Nested-filtering', () => {
       new FilterSpec('user.id', [null, '', '  '], FilterOperator.Equals),
       new FilterSpec('user.contact.email', null, FilterOperator.Like),
     ];
-    const nestedFilter = new NestedFilter(filterArray).getHttpParams();
+    const nestedFilter = new NestedFilter({
+      filterSpecs: filterArray,
+    }).getHttpParams();
 
     expect(decodeURI(nestedFilter.toString())).toBe('');
   });
@@ -253,7 +265,9 @@ describe('Nested-filtering', () => {
         FilterOperator.GreaterOrEquals
       ),
     ];
-    const nestedFilter = new NestedFilter(filterArray).getHttpParams();
+    const nestedFilter = new NestedFilter({
+      filterSpecs: filterArray,
+    }).getHttpParams();
 
     expect(decodeURI(nestedFilter.toString())).toBe(
       'filter={"AND": [{"user": {"EQ": {"id": "12"}}}, {"user": {"address": {"city": {"street": {"GE": {"apartment": "10"}}}}}}]}'
@@ -261,12 +275,11 @@ describe('Nested-filtering', () => {
   });
 
   it('should be created nested filter string with inclusion of single related resources', () => {
-    const nestedFilter = new NestedFilter(
-      filterArrayClient,
-      NestingOperator.Or,
-      null,
-      'user'
-    ).getHttpParams();
+    const nestedFilter = new NestedFilter({
+      filterSpecs: filterArrayClient,
+      nestingCondition: NestingOperator.Or,
+      relatedResources: 'user',
+    }).getHttpParams();
 
     expect(decodeURI(nestedFilter.toString())).toBe(
       'include=user&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
@@ -274,12 +287,11 @@ describe('Nested-filtering', () => {
   });
 
   it('should be created nested filter string with inclusion of multiple related resources', () => {
-    const nestedFilter = new NestedFilter(
-      filterArrayClient,
-      NestingOperator.Or,
-      null,
-      ['user', 'car', 'house']
-    ).getHttpParams();
+    const nestedFilter = new NestedFilter({
+      filterSpecs: filterArrayClient,
+      nestingCondition: NestingOperator.Or,
+      relatedResources: ['user', 'car', 'house'],
+    }).getHttpParams();
 
     expect(decodeURI(nestedFilter.toString())).toBe(
       'include=user,car,house&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
@@ -287,12 +299,11 @@ describe('Nested-filtering', () => {
   });
 
   it('should be created nested filter string with non inclusion of empty single related resources', () => {
-    const nestedFilter = new NestedFilter(
-      filterArrayClient,
-      NestingOperator.Or,
-      null,
-      '  '
-    ).getHttpParams();
+    const nestedFilter = new NestedFilter({
+      filterSpecs: filterArrayClient,
+      nestingCondition: NestingOperator.Or,
+      relatedResources: '  ',
+    }).getHttpParams();
 
     expect(decodeURI(nestedFilter.toString())).toBe(
       'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
@@ -300,12 +311,11 @@ describe('Nested-filtering', () => {
   });
 
   it('should be created nested filter string with inclusion of multiple related resources while some are empty', () => {
-    const nestedFilter = new NestedFilter(
-      filterArrayClient,
-      NestingOperator.Or,
-      null,
-      ['', '  ', 'house', '  ', 'apartment']
-    ).getHttpParams();
+    const nestedFilter = new NestedFilter({
+      filterSpecs: filterArrayClient,
+      nestingCondition: NestingOperator.Or,
+      relatedResources: ['', '  ', 'house', '  ', 'apartment'],
+    }).getHttpParams();
 
     expect(decodeURI(nestedFilter.toString())).toBe(
       'include=house,apartment&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
@@ -313,12 +323,11 @@ describe('Nested-filtering', () => {
   });
 
   it('should be created nested filter string with non inclusion of empty multiple related resources', () => {
-    const nestedFilter = new NestedFilter(
-      filterArrayClient,
-      NestingOperator.Or,
-      null,
-      ['  ', ' ', '  ']
-    ).getHttpParams();
+    const nestedFilter = new NestedFilter({
+      filterSpecs: filterArrayClient,
+      nestingCondition: NestingOperator.Or,
+      relatedResources: ['  ', ' ', '  '],
+    }).getHttpParams();
 
     expect(decodeURI(nestedFilter.toString())).toBe(
       'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}'
@@ -326,16 +335,16 @@ describe('Nested-filtering', () => {
   });
 
   it('should be create nested filter with inclusion and single sort param', () => {
-    const nestedFilterUser = new NestedFilter(
-      filterArrayUser,
-      NestingOperator.And
-    );
-    const nestedFilterClient = new NestedFilter(
-      filterArrayClient,
-      NestingOperator.Or,
-      nestedFilterUser.buildFilterString(),
-      'client'
-    );
+    const nestedFilterUser = new NestedFilter({
+      filterSpecs: filterArrayUser,
+      nestingCondition: NestingOperator.And,
+    });
+    const nestedFilterClient = new NestedFilter({
+      filterSpecs: filterArrayClient,
+      nestingCondition: NestingOperator.Or,
+      relatedResources: 'client',
+      innerNestedFilter: nestedFilterUser.buildFilterString(),
+    });
     nestedFilterClient.sortBy(new SortSpec('user.name', SortDirection.DESC));
 
     expect(decodeURI(nestedFilterClient.getHttpParams().toString())).toBe(
@@ -349,16 +358,16 @@ describe('Nested-filtering', () => {
   });
 
   it('should be create nested filter with inclusion and multiple sort param', () => {
-    const nestedFilterUser = new NestedFilter(
-      filterArrayUser,
-      NestingOperator.And
-    );
-    const nestedFilterClient = new NestedFilter(
-      filterArrayClient,
-      NestingOperator.Or,
-      nestedFilterUser.buildFilterString(),
-      ['client', 'house']
-    );
+    const nestedFilterUser = new NestedFilter({
+      filterSpecs: filterArrayUser,
+      nestingCondition: NestingOperator.And,
+    });
+    const nestedFilterClient = new NestedFilter({
+      filterSpecs: filterArrayClient,
+      nestingCondition: NestingOperator.Or,
+      relatedResources: ['client', 'house'],
+      innerNestedFilter: nestedFilterUser.buildFilterString(),
+    });
     nestedFilterClient.sortBy([
       new SortSpec('user.name', SortDirection.ASC),
       new SortSpec('user.number', SortDirection.DESC),
@@ -370,12 +379,11 @@ describe('Nested-filtering', () => {
   });
 
   it('should be created nested filter string with non inclusion and empty single sort param', () => {
-    const nestedFilter = new NestedFilter(
-      filterArrayClient,
-      NestingOperator.Or,
-      null,
-      '  '
-    );
+    const nestedFilter = new NestedFilter({
+      filterSpecs: filterArrayClient,
+      nestingCondition: NestingOperator.Or,
+      relatedResources: '  ',
+    });
     nestedFilter.sortBy(new SortSpec('  ', SortDirection.ASC));
 
     expect(decodeURI(nestedFilter.getHttpParams().toString())).toBe(
@@ -389,12 +397,11 @@ describe('Nested-filtering', () => {
   });
 
   it('should be created nested filter string with inclusion and empty multiple sort param', () => {
-    const nestedFilter = new NestedFilter(
-      filterArrayClient,
-      NestingOperator.Or,
-      null,
-      'client'
-    );
+    const nestedFilter = new NestedFilter({
+      filterSpecs: filterArrayClient,
+      nestingCondition: NestingOperator.Or,
+      relatedResources: 'client',
+    });
     nestedFilter.sortBy([
       new SortSpec('  ', SortDirection.ASC),
       new SortSpec(' ', SortDirection.DESC),
@@ -406,16 +413,16 @@ describe('Nested-filtering', () => {
   });
 
   it('should be create nested filter with default pagination specs', () => {
-    const nestedFilterUser = new NestedFilter(
-      filterArrayUser,
-      NestingOperator.And
-    );
-    const nestedFilterClient = new NestedFilter(
-      filterArrayClient,
-      NestingOperator.Or,
-      nestedFilterUser.buildFilterString(),
-      'client'
-    );
+    const nestedFilterUser = new NestedFilter({
+      filterSpecs: filterArrayUser,
+      nestingCondition: NestingOperator.And,
+    });
+    const nestedFilterClient = new NestedFilter({
+      filterSpecs: filterArrayClient,
+      nestingCondition: NestingOperator.Or,
+      relatedResources: 'client',
+      innerNestedFilter: nestedFilterUser.buildFilterString(),
+    });
     nestedFilterClient.sortBy(new SortSpec('user.name', SortDirection.DESC));
 
     const paginationSpec = new PaginationSpec();
@@ -432,16 +439,16 @@ describe('Nested-filtering', () => {
   });
 
   it('should be create nested filter with custom pagination specs', () => {
-    const nestedFilterUser = new NestedFilter(
-      filterArrayUser,
-      NestingOperator.And
-    );
-    const nestedFilterClient = new NestedFilter(
-      filterArrayClient,
-      NestingOperator.Or,
-      nestedFilterUser.buildFilterString(),
-      'client'
-    );
+    const nestedFilterUser = new NestedFilter({
+      filterSpecs: filterArrayUser,
+      nestingCondition: NestingOperator.And,
+    });
+    const nestedFilterClient = new NestedFilter({
+      filterSpecs: filterArrayClient,
+      nestingCondition: NestingOperator.Or,
+      relatedResources: 'client',
+      innerNestedFilter: nestedFilterUser.buildFilterString(),
+    });
     nestedFilterClient.sortBy(new SortSpec('user.name', SortDirection.DESC));
 
     const paginationSpec = new PaginationSpec(3, 20, 50);
@@ -469,13 +476,12 @@ describe('Nested-filtering', () => {
   });
 
   it('should be created nested filter string with single sparse fieldset', () => {
-    const nestedFilter = new NestedFilter(
-      filterArrayClient,
-      NestingOperator.Or,
-      null,
-      'client',
-      'client.id'
-    );
+    const nestedFilter = new NestedFilter({
+      filterSpecs: filterArrayClient,
+      nestingCondition: NestingOperator.Or,
+      relatedResources: 'client',
+      sparseFieldsets: 'client.id',
+    });
     nestedFilter.sortBy([
       new SortSpec('  ', SortDirection.ASC),
       new SortSpec(' ', SortDirection.DESC),
@@ -487,13 +493,12 @@ describe('Nested-filtering', () => {
   });
 
   it('should be created nested filter string with multiple sparse fieldsets', () => {
-    const nestedFilter = new NestedFilter(
-      filterArrayClient,
-      NestingOperator.Or,
-      null,
-      'client',
-      ['client.id', 'client.name']
-    );
+    const nestedFilter = new NestedFilter({
+      filterSpecs: filterArrayClient,
+      nestingCondition: NestingOperator.Or,
+      relatedResources: 'client',
+      sparseFieldsets: ['client.id', 'client.name'],
+    });
     nestedFilter.sortBy([
       new SortSpec('  ', SortDirection.ASC),
       new SortSpec(' ', SortDirection.DESC),
@@ -505,13 +510,12 @@ describe('Nested-filtering', () => {
   });
 
   it('should be created nested filter string with multiple sparse fieldsets while some are empty strings', () => {
-    const nestedFilter = new NestedFilter(
-      filterArrayClient,
-      NestingOperator.Or,
-      null,
-      'client',
-      ['client.id', '   ', 'client.name', '']
-    );
+    const nestedFilter = new NestedFilter({
+      filterSpecs: filterArrayClient,
+      nestingCondition: NestingOperator.Or,
+      relatedResources: 'client',
+      sparseFieldsets: ['client.id', '   ', 'client.name', ''],
+    });
     nestedFilter.sortBy([
       new SortSpec('  ', SortDirection.ASC),
       new SortSpec(' ', SortDirection.DESC),

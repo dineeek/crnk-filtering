@@ -12,3 +12,5 @@ export * from './lib/utils/sort/sort-direction';
 export * from './lib/utils/sort/sort-spec';
 
 export * from './lib/utils/pagination/pagination-spec';
+
+export * from './lib/utils/query-params';

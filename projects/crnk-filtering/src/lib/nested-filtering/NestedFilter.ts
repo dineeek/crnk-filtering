@@ -7,6 +7,7 @@ import {
   getSortingParams,
   getStringParams,
 } from '../utils/helper-functions';
+import { NestedQueryParameters } from '../utils/query-params';
 
 /**
  * 	 Represents a instance of nested filter string.
@@ -29,32 +30,28 @@ export class NestedFilter {
    * @param sparseFieldsets - Information about fields to include in the response
    *
    */
-  public constructor(
-    filterSpecs: FilterSpec | Array<FilterSpec>,
-    nestingCondition?: NestingOperatorType,
-    innerNestedFilter?: string | null,
-    relatedResources?: string | Array<string>,
-    sparseFieldsets?: string | Array<string>
-  ) {
+  public constructor(queryParams: NestedQueryParameters) {
     this.sort = null;
 
     this.filterSpecs =
-      filterSpecs instanceof Array
-        ? filterArray(filterSpecs)
-        : filterArray(new Array<FilterSpec>(filterSpecs));
+      queryParams.filterSpecs instanceof Array
+        ? filterArray(queryParams.filterSpecs)
+        : filterArray(new Array<FilterSpec>(queryParams.filterSpecs));
 
-    this.nestingCondition = nestingCondition
-      ? nestingCondition
+    this.nestingCondition = queryParams.nestingCondition
+      ? queryParams.nestingCondition
       : NestingOperator.And;
 
-    this.innerNestedFilter = innerNestedFilter ? innerNestedFilter : null;
-
-    this.relatedResources = relatedResources
-      ? getStringParams(relatedResources)
+    this.innerNestedFilter = queryParams.innerNestedFilter
+      ? queryParams.innerNestedFilter
       : null;
 
-    this.sparseFieldsets = sparseFieldsets
-      ? getStringParams(sparseFieldsets)
+    this.relatedResources = queryParams.relatedResources
+      ? getStringParams(queryParams.relatedResources)
+      : null;
+
+    this.sparseFieldsets = queryParams.sparseFieldsets
+      ? getStringParams(queryParams.sparseFieldsets)
       : null;
   }
 

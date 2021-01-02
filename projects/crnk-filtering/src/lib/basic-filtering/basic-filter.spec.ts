@@ -10,7 +10,9 @@ describe('Basic-filtering', () => {
     const filterArray = [
       new FilterSpec('user.name', 'Auto', FilterOperator.Like),
     ];
-    const basicFilter = new BasicFilter(filterArray).getHttpParams();
+    const basicFilter = new BasicFilter({
+      filterSpecs: filterArray,
+    }).getHttpParams();
 
     expect(decodeURI(basicFilter.toString())).toBe(
       'filter[user.name][LIKE]=Auto%'
@@ -22,7 +24,7 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.name', 'Auto', FilterOperator.Like),
       new FilterSpec('user.number', '265112', FilterOperator.Equals),
     ];
-    const basicFilter = new BasicFilter(filterArray);
+    const basicFilter = new BasicFilter({ filterSpecs: filterArray });
 
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
       'filter[user.name][LIKE]=Auto%&filter[user.number][EQ]=265112'
@@ -41,7 +43,9 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.address.city', null, FilterOperator.Equals),
       new FilterSpec('user.address.zip', undefined, FilterOperator.Equals),
     ];
-    const basicFilter = new BasicFilter(filterArray).getHttpParams();
+    const basicFilter = new BasicFilter({
+      filterSpecs: filterArray,
+    }).getHttpParams();
 
     expect(decodeURI(basicFilter.toString())).toBe('');
   });
@@ -55,7 +59,9 @@ describe('Basic-filtering', () => {
       new FilterSpec('insured', false, FilterOperator.Equals),
       new FilterSpec('firstOwner', null, FilterOperator.Equals),
     ];
-    const basicFilter = new BasicFilter(filterArray).getHttpParams();
+    const basicFilter = new BasicFilter({
+      filterSpecs: filterArray,
+    }).getHttpParams();
 
     expect(decodeURI(basicFilter.toString())).toBe(
       'filter[user.number][EQ]=132312&filter[user.address.zip][EQ]=32115&filter[insured][EQ]=false'
@@ -77,7 +83,7 @@ describe('Basic-filtering', () => {
         FilterOperator.Like
       ),
     ];
-    const basicFilter = new BasicFilter(filterArray);
+    const basicFilter = new BasicFilter({ filterSpecs: filterArray });
 
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
       'filter[user.number][EQ]=13513,23151,21512&filter[user.address.city][EQ]=Zurich,Ljubljana,Novi Sad&filter[user.address.street][LIKE]=Gustav%,Kaiser%,Strasse%'
@@ -94,7 +100,7 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.name', 'Dino', FilterOperator.Like),
       new FilterSpec('user.number', '14141', FilterOperator.Equals),
     ];
-    const basicFilter = new BasicFilter(filterArray);
+    const basicFilter = new BasicFilter({ filterSpecs: filterArray });
     basicFilter.sortBy(new SortSpec('user.name', SortDirection.DESC));
 
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
@@ -107,7 +113,7 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
-    const basicFilter = new BasicFilter(filterArray);
+    const basicFilter = new BasicFilter({ filterSpecs: filterArray });
     basicFilter.sortBy([
       new SortSpec('user.name', SortDirection.DESC),
       new SortSpec('user.number', SortDirection.ASC),
@@ -128,7 +134,7 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
-    const basicFilter = new BasicFilter(filterArray);
+    const basicFilter = new BasicFilter({ filterSpecs: filterArray });
     basicFilter.sortBy([
       new SortSpec('  ', SortDirection.DESC),
       new SortSpec('user.number', SortDirection.ASC),
@@ -144,7 +150,7 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
-    const basicFilter = new BasicFilter(filterArray);
+    const basicFilter = new BasicFilter({ filterSpecs: filterArray });
     basicFilter.sortBy([
       new SortSpec('', SortDirection.DESC),
       new SortSpec('   ', SortDirection.ASC),
@@ -160,7 +166,10 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
-    const basicFilter = new BasicFilter(filterArray, 'client');
+    const basicFilter = new BasicFilter({
+      filterSpecs: filterArray,
+      relatedResources: 'client',
+    });
     basicFilter.sortBy(new SortSpec('client.name', SortDirection.DESC));
 
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
@@ -173,7 +182,10 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
-    const basicFilter = new BasicFilter(filterArray, '');
+    const basicFilter = new BasicFilter({
+      filterSpecs: filterArray,
+      relatedResources: ' ',
+    });
     basicFilter.sortBy(new SortSpec('client.name', SortDirection.DESC));
 
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
@@ -186,7 +198,10 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
-    const basicFilter = new BasicFilter(filterArray, ['client', 'car', ' ']);
+    const basicFilter = new BasicFilter({
+      filterSpecs: filterArray,
+      relatedResources: ['client', 'car', ' '],
+    });
     basicFilter.sortBy(new SortSpec('client.name', SortDirection.ASC));
 
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
@@ -199,7 +214,10 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
-    const basicFilter = new BasicFilter(filterArray, []);
+    const basicFilter = new BasicFilter({
+      filterSpecs: filterArray,
+      relatedResources: [],
+    });
     basicFilter.sortBy(new SortSpec('user.name', SortDirection.DESC));
 
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
@@ -212,7 +230,10 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
-    const basicFilter = new BasicFilter(filterArray, ['  ', '', '    ']);
+    const basicFilter = new BasicFilter({
+      filterSpecs: filterArray,
+      relatedResources: ['  ', '', '    '],
+    });
     basicFilter.sortBy(new SortSpec('user.name', SortDirection.ASC));
 
     expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
@@ -225,7 +246,10 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
-    const basicFilter = new BasicFilter(filterArray, 'client');
+    const basicFilter = new BasicFilter({
+      filterSpecs: filterArray,
+      relatedResources: 'client',
+    });
     basicFilter.sortBy(new SortSpec('client.name', SortDirection.DESC));
 
     const paginationSpec = new PaginationSpec();
@@ -244,7 +268,10 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
-    const basicFilter = new BasicFilter(filterArray, 'client');
+    const basicFilter = new BasicFilter({
+      filterSpecs: filterArray,
+      relatedResources: 'client',
+    });
     basicFilter.sortBy(new SortSpec('client.name', SortDirection.DESC));
 
     const paginationSpec = new PaginationSpec(2, 20, 0);
@@ -263,7 +290,11 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
-    const basicFilter = new BasicFilter(filterArray, 'client', 'user.name');
+    const basicFilter = new BasicFilter({
+      filterSpecs: filterArray,
+      relatedResources: 'client',
+      sparseFieldsets: 'user.name',
+    });
     basicFilter.sortBy(new SortSpec('client.name', SortDirection.DESC));
 
     const paginationSpec = new PaginationSpec();
@@ -282,10 +313,11 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
-    const basicFilter = new BasicFilter(filterArray, 'client', [
-      'user.name',
-      'user.number',
-    ]);
+    const basicFilter = new BasicFilter({
+      filterSpecs: filterArray,
+      relatedResources: 'client',
+      sparseFieldsets: ['user.name', 'user.number'],
+    });
     basicFilter.sortBy(new SortSpec('client.name', SortDirection.DESC));
 
     const paginationSpec = new PaginationSpec();
@@ -304,12 +336,11 @@ describe('Basic-filtering', () => {
       new FilterSpec('user.name', 'Gustav', FilterOperator.Like),
       new FilterSpec('user.number', '14123', FilterOperator.Equals),
     ];
-    const basicFilter = new BasicFilter(filterArray, 'client', [
-      'user.name',
-      '  ',
-      'user.number',
-      '  ',
-    ]);
+    const basicFilter = new BasicFilter({
+      filterSpecs: filterArray,
+      relatedResources: 'client',
+      sparseFieldsets: ['user.name', '  ', 'user.number', '  '],
+    });
     basicFilter.sortBy(new SortSpec('client.name', SortDirection.DESC));
 
     const paginationSpec = new PaginationSpec();
