@@ -9,6 +9,7 @@ Crnk-filtering is a Typescript package for generating CRNK resource filter strin
 - [Sorting] (https://www.crnk.io/releases/stable/documentation/#_sorting) - from v2.0.0
 - [Inclusion of Related Resources] (https://www.crnk.io/releases/stable/documentation/#_inclusion_of_related_resources) - from v2.0.0
 - [Pagination] (https://www.crnk.io/releases/stable/documentation/#_pagination) - from v2.1.0
+- [Sparse fieldsets] (https://www.crnk.io/releases/stable/documentation/#_sparse_fieldsets) - from v3.0.0
 
 ### Installation
 
@@ -49,11 +50,13 @@ To apply generated CRNK filter in HTTP calls, define HTTP parameter `params` lik
 ### Basic filtering
 
 ```typescript
-const basicFilter = new BasicFilter([
-  new FilterSpec("user.id", 12, FilterOperator.Equals),
-  new FilterSpec("user.name", "Dino", FilterOperator.Like),
-  new FilterSpec("user.age", 25, FilterOperator.GreaterOrEquals),
-]).getHttpParams();
+const basicFilter = new BasicFilter({
+  filterSpecs: [
+    new FilterSpec("user.id", 12, FilterOperator.Equals),
+    new FilterSpec("user.name", "Dino", FilterOperator.Like),
+    new FilterSpec("user.age", 25, FilterOperator.GreaterOrEquals),
+  ],
+}).getHttpParams();
 ```
 
 Above basic filter will result with following string:
@@ -65,14 +68,14 @@ Above basic filter will result with following string:
 ### Nested filtering
 
 ```typescript
-const nestedFilter = new NestedFilter(
-  [
+const nestedFilter = new NestedFilter({
+  filterSpecs: [
     new FilterSpec("user.id", 12, FilterOperator.Equals),
     new FilterSpec("user.name", "Dino", FilterOperator.Like),
     new FilterSpec("user.age", 25, FilterOperator.GreaterOrEquals),
   ],
-  NestingOperator.And
-).getHttpParams();
+  nestingCondition: NestingOperator.And,
+}).getHttpParams();
 ```
 
 Above nested filter will result with the following string:
@@ -92,12 +95,12 @@ It also supports creating a nested filter inside already nested filter string li
 
 ```typescript
 // First create inner nested filter string:
-const innerNestedFilter = new NestedFilter(innerFilterSpecArray, NestingOperator.Or);
+const innerNestedFilter = new NestedFilter({filterSpecs: innerFilterSpecArray, nestingCondition: NestingOperator.Or});
 // Example of created part filter string:
 {"OR": [{"user":{"EQ": {"id": "100"}}}, {"user":{"EQ": {"age": "30"}}}]}
 
 // Then create main filter string calling this method:
-const nestedFilter = new NestedFilter(filterSpecArray, NestingOperator.And, innerNestedFilter.buildFilterString());
+const nestedFilter = new NestedFilter({filterSpecs: filterSpecArray, nestingCondition: NestingOperator.And, innerNestedFilter: innerNestedFilter.buildFilterString()});
 // Result example of the whole filter string:
 {"AND": [{"EQ": {"zip": "70"}}, {"OR": [{"user":{"EQ": {"id": "100"}}}, {"user":{"EQ": {"age": "30"}}}]}]}
 ```
@@ -115,11 +118,13 @@ Sorting parameters are represented by SortSpec similar to FilterSpec above.
 An example looks like:
 
 ```typescript
-const basicFilter = new BasicFilter([
-  new FilterSpec("user.id", 12, FilterOperator.Equals),
-  new FilterSpec("user.name", "Dino", FilterOperator.Like),
-  new FilterSpec("user.age", 25, FilterOperator.GreaterOrEquals),
-]);
+const basicFilter = new BasicFilter({
+  filterSpecs: [
+    new FilterSpec("user.id", 12, FilterOperator.Equals),
+    new FilterSpec("user.name", "Dino", FilterOperator.Like),
+    new FilterSpec("user.age", 25, FilterOperator.GreaterOrEquals),
+  ],
+});
 
 basicFilter.sortBy([
   new SortSpec("user.id", SortDirection.ASC),
@@ -136,8 +141,8 @@ The same logic applied for creating sorting with nesting filter string.
 Information about relationships to include in the response can be achieved by providing an `includeResources` parameters.
 
 ```typescript
-const basicFilter = new BasicFilter(
-  [
+const basicFilter = new BasicFilter({
+  filterSpecs: [
     new FilterSpec("user.id", 12, FilterOperator.Equals),
     new FilterSpec("user.name", "Dino", FilterOperator.Like),
     new FilterSpec(
@@ -146,8 +151,8 @@ const basicFilter = new BasicFilter(
       FilterOperator.GreaterOrEquals
     ),
   ],
-  ["client", "car"] // Included resources
-).getHttpParams();
+  relatedResources: ["client", "car"], // Included resources
+}).getHttpParams();
 
 basicFilter.sortBy([
   new SortSpec("client.id", SortDirection.ASC),
@@ -224,4 +229,22 @@ To apply generated pagination, define HTTP parameter `params` like in example be
 
 // paginationSpec.setHttpParams(filter.getHttpParams()) returns example:
 ("filter[user.id][EQ]=12&filter[user.name][LIKE]=Dino%&filter[client.personalInfo.age][GE]=25&sort=client.id,-car.name&page[limit]=10&page[offset]=0");
+```
+
+### Sparse fieldsets
+
+Information about fields to include in the response can be achieved by providing fields parameter:
+
+GET /tasks?fields=name,description
+
+```typescript
+const nestedFilter = new NestedFilter({
+  filterSpecs: [
+    new FilterSpec("user.id", 12, FilterOperator.Equals),
+    new FilterSpec("user.name", "Dino", FilterOperator.Like),
+    new FilterSpec("user.age", 25, FilterOperator.GreaterOrEquals),
+  ],
+  nestingCondition: NestingOperator.And,
+  sparseFieldsets: ["user.id", "user.age"], // include those fields in the response
+}).getHttpParams();
 ```
