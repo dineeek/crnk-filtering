@@ -104,16 +104,16 @@ function trimStringsInsideArray(arr: any[]): any[] {
 export function getStringParams(
   stringParams: string | Array<string>
 ): string | null {
-  const resources =
+  const params =
     stringParams instanceof Array
       ? filterEmptyStringValues(stringParams)
       : filterEmptyStringValues(new Array<string>(stringParams));
 
-  if (!resources.length) {
+  if (!params.length) {
     return null;
   }
 
-  return resources.length > 1 ? resources.join(',') : resources[0];
+  return params.length > 1 ? params.join(',') : params[0];
 }
 
 /**
@@ -155,11 +155,11 @@ export function getSortingParams(
 }
 
 /**
- * Function `setQuotersAndPercentageSignOnValues` sets the percentage sign and in nested filtering,
+ * Helper function `transformLikeValuesToString` sets the percentage sign and in nested filtering,
  * double-quotes on all array values or a single value.
  * If the array contains only one value then filter value losses array data type and it is passed as a single value.
  */
-export function setQuotersAndPercentageSignOnLikeValues(
+export function transformLikeValuesToString(
   value: any,
   filterType: 'BASIC' | 'NESTED'
 ): void {
@@ -185,10 +185,10 @@ export function setQuotersAndPercentageSignOnLikeValues(
 }
 
 /**
- * Function `setQuotersOnValues` sets the double-quotes on all array values or single value.
+ * Helper function `transformLikeValuesToString` sets the double-quotes on all array values or single value.
  * If the array contains only one value then filter value losses array data type and is passed as a single value.
  */
-export function setQuotersOnValues(value: any): void {
+export function transformValuesToString(value: any): void {
   if (value instanceof Array) {
     const quoteMarkedValues: string[] = [];
     value.forEach((element: any) => {

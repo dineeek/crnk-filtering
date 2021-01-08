@@ -1,7 +1,7 @@
 import { FilterOperator, FilterOperatorType } from '../utils/crnk-operators';
 import {
-  setQuotersAndPercentageSignOnLikeValues,
-  setQuotersOnValues,
+  transformLikeValuesToString,
+  transformValuesToString,
 } from '../utils/helper-functions';
 
 export class FilterSpec {
@@ -60,7 +60,7 @@ export class FilterSpec {
    * Method `setBasicFilterLikeSpecs` calls the function to prepare basic filter values for LIKE operator by putting percentage values.
    */
   public setBasicFilterLikeSpecs(): void {
-    this.value = setQuotersAndPercentageSignOnLikeValues(this.value, 'BASIC');
+    this.value = transformLikeValuesToString(this.value, 'BASIC');
     this.specsPreparedFlag = true;
   }
 
@@ -96,7 +96,7 @@ export class FilterSpec {
   private prepareNestedFilterValues(): void {
     this.value =
       this.operator === 'LIKE'
-        ? setQuotersAndPercentageSignOnLikeValues(this.value, 'NESTED')
-        : setQuotersOnValues(this.value);
+        ? transformLikeValuesToString(this.value, 'NESTED')
+        : transformValuesToString(this.value);
   }
 }
