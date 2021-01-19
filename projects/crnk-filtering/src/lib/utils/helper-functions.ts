@@ -200,7 +200,7 @@ export function transformValuesToString(value: any): void {
         ? quoteMarkedValues[0]
         : '[' + quoteMarkedValues.join(', ') + ']';
   } else {
-    value = '"' + value + '"';
+    value = value !== null ? '"' + value + '"' : value;
   }
 
   return value;

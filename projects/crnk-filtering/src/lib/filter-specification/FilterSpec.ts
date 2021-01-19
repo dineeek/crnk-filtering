@@ -11,6 +11,7 @@ export class FilterSpec {
   public relationPathAttributes: string[];
   public lastPathAttribute = '';
   public specsPreparedFlag = false;
+  public nullable = false;
 
   /**
    * Represents a filter used in CRNK filtering.
@@ -22,12 +23,14 @@ export class FilterSpec {
   public constructor(
     filterPathSpec: string,
     filterValue: any,
-    filterOperator?: FilterOperatorType
+    filterOperator?: FilterOperatorType,
+    nullable?: boolean
   ) {
     this.pathSpec = filterPathSpec;
     this.value = filterValue;
     this.operator = filterOperator ? filterOperator : FilterOperator.Equals;
     this.relationPathAttributes = [];
+    this.nullable = nullable ? true : false;
   }
 
   /**
@@ -44,16 +47,27 @@ export class FilterSpec {
    *
    */
   public isValueValid(): boolean {
+    if (this.nullable) {
+      return !this.isFalsyValue();
+    }
+
+    if (!this.nullable) {
+      return this.value !== null && !this.isFalsyValue();
+    }
+
+    return true;
+  }
+
+  private isFalsyValue(): boolean {
     if (
-      this.value === null ||
       this.value === undefined ||
       this.value === '' ||
       Number.isNaN(this.value)
     ) {
-      return false;
+      return true;
     }
 
-    return true;
+    return false;
   }
 
   /**

@@ -353,4 +353,18 @@ describe('Basic-filtering', () => {
       'include=client&filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&fields=user.name,user.number&sort=-client.name&page[limit]=10&page[offset]=0'
     );
   });
+
+  it('should be create string with nullable filters values', () => {
+    const filterArray = [
+      new FilterSpec('user.name', 'Auto', FilterOperator.Like),
+      new FilterSpec('user.number', null, FilterOperator.Equals, true),
+      new FilterSpec('user.address', 'Strasse', FilterOperator.Like),
+      new FilterSpec('user.shortname', null, FilterOperator.Equals, false),
+    ];
+    const basicFilter = new BasicFilter({ filterSpecs: filterArray });
+
+    expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
+      'filter[user.name][LIKE]=Auto%&filter[user.number][EQ]=null&filter[user.address][LIKE]=Strasse%'
+    );
+  });
 });

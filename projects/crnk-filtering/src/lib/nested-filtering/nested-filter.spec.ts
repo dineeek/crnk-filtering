@@ -525,4 +525,19 @@ describe('Nested-filtering', () => {
       'include=client&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}&fields=client.id,client.name'
     );
   });
+
+  it('should be created nested filter string with nullable filter values ', () => {
+    const nestedFilter = new NestedFilter({
+      filterSpecs: [
+        new FilterSpec('auto', null, FilterOperator.Equals, true),
+        new FilterSpec('insured', false, FilterOperator.Equals),
+        new FilterSpec('firstOwner', 'Dinko', FilterOperator.Equals, false),
+        new FilterSpec('secondOwner', null, FilterOperator.Equals, false),
+      ],
+    }).getHttpParams();
+
+    expect(decodeURI(nestedFilter.toString())).toBe(
+      'filter={"AND": [{"EQ": {"auto": null}}, {"EQ": {"insured": "false"}}, {"EQ": {"firstOwner": "Dinko"}}]}'
+    );
+  });
 });
