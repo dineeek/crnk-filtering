@@ -59,15 +59,9 @@ export class FilterSpec {
   }
 
   private isFalsyValue(): boolean {
-    if (
-      this.value === undefined ||
-      this.value === '' ||
-      Number.isNaN(this.value)
-    ) {
-      return true;
-    }
-
-    return false;
+    return (
+      this.value === undefined || this.value === '' || Number.isNaN(this.value)
+    );
   }
 
   /**

@@ -15,8 +15,8 @@ import { SortSpec } from '../utils/sort/sort-spec';
 export class BasicFilter {
   private sort: string | null;
   private filterSpecs: Array<FilterSpec>;
-  private relatedResources: string | null; // Inclusion of Related Resources
-  private sparseFieldsets: string | null; // Information about fields to include in the response
+  private readonly relatedResources: string | null; // Inclusion of Related Resources
+  private readonly sparseFieldsets: string | null; // Information about fields to include in the response
   /**
    *
    * @param filterSpecs - Array of FilterSpec's for creating filter string.
@@ -76,7 +76,7 @@ export class BasicFilter {
    * Method `isAnyFilter` is checking if there is at least one valid filter.
    */
   public isAnyFilter(): boolean {
-    return this.filterSpecs.length ? true : false;
+    return !!this.filterSpecs.length;
   }
 
   /**

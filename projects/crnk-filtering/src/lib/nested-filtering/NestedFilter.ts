@@ -15,10 +15,10 @@ import { NestedQueryParameters } from '../utils/query-params';
 export class NestedFilter {
   private sort: string | null;
   private filterSpecs: Array<FilterSpec>;
-  private nestingCondition: NestingOperatorType;
-  private innerNestedFilter: string | null;
-  private relatedResources: string | null; // Inclusion of Related Resources
-  private sparseFieldsets: string | null; // Information about fields to include in the response
+  private readonly nestingCondition: NestingOperatorType;
+  private readonly innerNestedFilter: string | null;
+  private readonly relatedResources: string | null; // Inclusion of Related Resources
+  private readonly sparseFieldsets: string | null; // Information about fields to include in the response
 
   /**
    *
@@ -94,7 +94,7 @@ export class NestedFilter {
    * Method `isAnyFilter` is checking if there is at least one valid filter.
    */
   public isAnyFilter(): boolean {
-    return this.filterSpecs.length ? true : false;
+    return !!this.filterSpecs.length;
   }
 
   /**
