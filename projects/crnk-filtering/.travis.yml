@@ -1,0 +1,13 @@
+sudo: required
+addons:
+  chrome: stable
+language: node_js
+node_js:
+  - node
+before_script:
+  - npm install -g @angular/cli
+script:
+  - cd crnk-filtering
+  - npm install
+  - npm run test-ci
+  - npm run build-ci

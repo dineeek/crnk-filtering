@@ -1,14 +1,36 @@
 {
   "name": "crnk-filtering",
-  "version": "3.1.2",
-  "author": {
-    "name": "Dino Klicek",
-    "email": "klicek.dino@gmail.com"
-  },
+  "version": "3.1.3",
   "peerDependencies": {
     "@angular/common": ">=6.0.0",
     "@angular/core": ">=6.0.0"
   },
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {},
+  "author": {
+    "name": "Dino Klicek",
+    "email": "dineeek@gmail.com"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dineeek/crnk-filtering"
+  },
+  "description": "Typescript CRNK filtering library",
+  "keywords": [
+    "crnk",
+    "framework",
+    "filtering",
+    "basic",
+    "nested",
+    "sorting",
+    "angular",
+    "library"
+  ],
+  "homepage": "https://github.com/dineeek/crnk-filtering/blob/main/README.md",
+  "bugs": {
+    "url": "https://github.com/dineeek/crnk-filtering/issues"
+  }
 }
