@@ -2,6 +2,10 @@
 
 Crnk-filtering is a Typescript package for generating CRNK resource filter strings.
 
+<p align="start">
+    <a href="https://travis-ci.com/dineeek/crnk-filtering"><img src="https://travis-ci.com/dineeek/crnk-filtering.svg?branch=main" /></a>
+</p>
+
 ## Features
 
 - [Basic filtering] (https://www.crnk.io/releases/stable/documentation/#_basic_filtering) - from v1.0.1
