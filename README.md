@@ -1,4 +1,6 @@
 # Crnk-filtering
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdineeek%2Fcrnk-filtering.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdineeek%2Fcrnk-filtering?ref=badge_shield)
+
 
 Crnk-filtering is a Typescript package for generating CRNK resource filter strings.
 
@@ -252,3 +254,7 @@ const nestedFilter = new NestedFilter({
   sparseFieldsets: ["user.id", "user.age"], // include those fields in the response
 }).getHttpParams();
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdineeek%2Fcrnk-filtering.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdineeek%2Fcrnk-filtering?ref=badge_large)
