@@ -4,6 +4,7 @@ Crnk-filtering is a Typescript package for generating CRNK resource filter strin
 
 <p align="start">
     <a href="https://travis-ci.com/dineeek/crnk-filtering"><img src="https://travis-ci.com/dineeek/crnk-filtering.svg?token=YSspYgvLPX2y3Q9zRFxp&branch=main" /></a>
+    <a href="https://codecov.io/gh/dineeek/crnk-filtering"><img src="https://codecov.io/gh/dineeek/crnk-filtering/branch/main/graph/badge.svg?token=2K70FOOVGR"/></a>
     <a href="https://www.npmjs.com/package/crnk-filtering"><img alt="weekly downloads from npm" src="https://img.shields.io/npm/dw/crnk-filtering.svg?style=flat-square"></a>
     <a href="https://www.npmjs.com/package/crnk-filtering"><img alt="npm version" src="https://img.shields.io/npm/v/crnk-filtering.svg?style=flat-square"></a>
 </p>

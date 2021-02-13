@@ -6,5 +6,10 @@ node_js:
   - node
 script:
   - npm install
+  - npm install codecov -g
   - npm run test-ci
   - npm run build-ci
+  - codecov -f coverage/*.json
+after_success:
+  - codecov
+  - bash <(curl -s https://codecov.io/bash)

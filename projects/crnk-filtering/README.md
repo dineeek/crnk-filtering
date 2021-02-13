@@ -3,8 +3,15 @@
 Crnk-filtering is a Typescript package for generating CRNK resource filter strings.
 
 <p align="start">
-    <a href="https://travis-ci.com/dineeek/crnk-filtering"><img src="https://travis-ci.com/dineeek/crnk-filtering.svg?branch=main" /></a>
+    <a href="https://travis-ci.com/dineeek/crnk-filtering"><img src="https://travis-ci.com/dineeek/crnk-filtering.svg?token=YSspYgvLPX2y3Q9zRFxp&branch=main" /></a>
+    <a href="https://codecov.io/gh/dineeek/crnk-filtering"><img src="https://codecov.io/gh/dineeek/crnk-filtering/branch/main/graph/badge.svg?token=2K70FOOVGR"/></a>
+    <a href="https://www.npmjs.com/package/crnk-filtering"><img alt="weekly downloads from npm" src="https://img.shields.io/npm/dw/crnk-filtering.svg?style=flat-square"></a>
+    <a href="https://www.npmjs.com/package/crnk-filtering"><img alt="npm version" src="https://img.shields.io/npm/v/crnk-filtering.svg?style=flat-square"></a>
 </p>
+
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdineeek%2Fcrnk-filtering.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdineeek%2Fcrnk-filtering?ref=badge_shield)
 
 ## Features
 
@@ -28,7 +35,7 @@ A filter parameter is represented by a FilterSpec. It holds the path to the attr
 An example looks like:
 
 ```typescript
-const filterSpecUser = new FilterSpec("user.id", 12, FilterOperator.Equals);
+const filterSpecUser = new FilterSpec('user.id', 12, FilterOperator.Equals);
 ```
 
 The filter value is strongly typed. Typically (by default) it is assumed that the filter value matches the attribute type and Crnk will attempt to parse passed String-based filter value accordingly. There are exceptions, for example, the LIKE filter operator always requires the filter value to be a string to support wildcards for not just String types.
@@ -55,30 +62,30 @@ To apply generated CRNK filter in HTTP calls, define HTTP parameter `params` lik
 
 ```typescript
 const basicFilter = new BasicFilter({
-  filterSpecs: [
-    new FilterSpec("user.id", 12, FilterOperator.Equals),
-    new FilterSpec("user.name", "Dino", FilterOperator.Like),
-    new FilterSpec("user.age", 25, FilterOperator.GreaterOrEquals),
-  ],
+	filterSpecs: [
+		new FilterSpec('user.id', 12, FilterOperator.Equals),
+		new FilterSpec('user.name', 'Dino', FilterOperator.Like),
+		new FilterSpec('user.age', 25, FilterOperator.GreaterOrEquals)
+	]
 }).getHttpParams();
 ```
 
 Above basic filter will result with following string:
 
 ```typescript
-"filter[user.id][EQ]=12&filter[user.name][LIKE]=Dino%&filter[user.age][GE]=25";
+'filter[user.id][EQ]=12&filter[user.name][LIKE]=Dino%&filter[user.age][GE]=25';
 ```
 
 ### Nested filtering
 
 ```typescript
 const nestedFilter = new NestedFilter({
-  filterSpecs: [
-    new FilterSpec("user.id", 12, FilterOperator.Equals),
-    new FilterSpec("user.name", "Dino", FilterOperator.Like),
-    new FilterSpec("user.age", 25, FilterOperator.GreaterOrEquals),
-  ],
-  nestingCondition: NestingOperator.And,
+	filterSpecs: [
+		new FilterSpec('user.id', 12, FilterOperator.Equals),
+		new FilterSpec('user.name', 'Dino', FilterOperator.Like),
+		new FilterSpec('user.age', 25, FilterOperator.GreaterOrEquals)
+	],
+	nestingCondition: NestingOperator.And
 }).getHttpParams();
 ```
 
@@ -114,7 +121,7 @@ const nestedFilter = new NestedFilter({filterSpecs: filterSpecArray, nestingCond
 Sorting information for the resources can be achieved by providing SortSpec parameter.
 
 ```typescript
-const sortSpec = new SortSpec("user.id", SortDirection.ASC);
+const sortSpec = new SortSpec('user.id', SortDirection.ASC);
 ```
 
 Sorting parameters are represented by SortSpec similar to FilterSpec above.
@@ -123,19 +130,19 @@ An example looks like:
 
 ```typescript
 const basicFilter = new BasicFilter({
-  filterSpecs: [
-    new FilterSpec("user.id", 12, FilterOperator.Equals),
-    new FilterSpec("user.name", "Dino", FilterOperator.Like),
-    new FilterSpec("user.age", 25, FilterOperator.GreaterOrEquals),
-  ],
+	filterSpecs: [
+		new FilterSpec('user.id', 12, FilterOperator.Equals),
+		new FilterSpec('user.name', 'Dino', FilterOperator.Like),
+		new FilterSpec('user.age', 25, FilterOperator.GreaterOrEquals)
+	]
 });
 
 basicFilter.sortBy([
-  new SortSpec("user.id", SortDirection.ASC),
-  new SortSpec("user.name", SortDirection.DESC),
+	new SortSpec('user.id', SortDirection.ASC),
+	new SortSpec('user.name', SortDirection.DESC)
 ]);
 
-("filter[user.id][EQ]=12&filter[user.name][LIKE]=Dino%&filter[user.age][GE]=25&sort=user.id,-user.name");
+('filter[user.id][EQ]=12&filter[user.name][LIKE]=Dino%&filter[user.age][GE]=25&sort=user.id,-user.name');
 ```
 
 The same logic applied for creating sorting with nesting filter string.
@@ -146,25 +153,25 @@ Information about relationships to include in the response can be achieved by pr
 
 ```typescript
 const basicFilter = new BasicFilter({
-  filterSpecs: [
-    new FilterSpec("user.id", 12, FilterOperator.Equals),
-    new FilterSpec("user.name", "Dino", FilterOperator.Like),
-    new FilterSpec(
-      "client.personalInfo.age",
-      25,
-      FilterOperator.GreaterOrEquals
-    ),
-  ],
-  relatedResources: ["client", "car"], // Included resources
+	filterSpecs: [
+		new FilterSpec('user.id', 12, FilterOperator.Equals),
+		new FilterSpec('user.name', 'Dino', FilterOperator.Like),
+		new FilterSpec(
+			'client.personalInfo.age',
+			25,
+			FilterOperator.GreaterOrEquals
+		)
+	],
+	relatedResources: ['client', 'car'] // Included resources
 }).getHttpParams();
 
 basicFilter.sortBy([
-  new SortSpec("client.id", SortDirection.ASC),
-  new SortSpec("car.name", SortDirection.DESC),
+	new SortSpec('client.id', SortDirection.ASC),
+	new SortSpec('car.name', SortDirection.DESC)
 ]);
 
 // basicFilter.getHttpParams() returns:
-("include=client,car&filter[user.id][EQ]=12&filter[user.name][LIKE]=Dino%&filter[client.personalInfo.age][GE]=25&sort=client.id,-car.name");
+('include=client,car&filter[user.id][EQ]=12&filter[user.name][LIKE]=Dino%&filter[client.personalInfo.age][GE]=25&sort=client.id,-car.name');
 ```
 
 It is important to note that the requested main resource will be affected by included filter params or sorting params.
@@ -193,12 +200,12 @@ It is only useful with Angular material tables and declared `mat-paginator` in H
 
 ```html
 <mat-paginator
-  showFirstLastButtons
-  [pageSizeOptions]="[10, 25, 50, 100, 200]"
-  [length]="paginationSpec.pageEvent.length"
-  [pageSize]="paginationSpec.pageEvent.pageSize"
-  [pageIndex]="0"
-  (page)="onChangePaginatorPage($event)"
+	showFirstLastButtons
+	[pageSizeOptions]="[10, 25, 50, 100, 200]"
+	[length]="paginationSpec.pageEvent.length"
+	[pageSize]="paginationSpec.pageEvent.pageSize"
+	[pageIndex]="0"
+	(page)="onChangePaginatorPage($event)"
 ></mat-paginator>
 ```
 
@@ -243,12 +250,18 @@ GET /tasks?fields=name,description
 
 ```typescript
 const nestedFilter = new NestedFilter({
-  filterSpecs: [
-    new FilterSpec("user.id", 12, FilterOperator.Equals),
-    new FilterSpec("user.name", "Dino", FilterOperator.Like),
-    new FilterSpec("user.age", 25, FilterOperator.GreaterOrEquals),
-  ],
-  nestingCondition: NestingOperator.And,
-  sparseFieldsets: ["user.id", "user.age"], // include those fields in the response
+	filterSpecs: [
+		new FilterSpec('user.id', 12, FilterOperator.Equals),
+		new FilterSpec('user.name', 'Dino', FilterOperator.Like),
+		new FilterSpec('user.age', 25, FilterOperator.GreaterOrEquals)
+	],
+	nestingCondition: NestingOperator.And,
+	sparseFieldsets: ['user.id', 'user.age'] // include those fields in the response
 }).getHttpParams();
 ```
+
+# License
+
+Apache License
+
+Copyright (c) 2021 Dino Klicek
