@@ -7,7 +7,6 @@ scripts:
   - npm install codecov -g
   - npm run test-ci
   - npm run build-ci
-  - codecov -f coverage/*.json
-after_success:,
-  - npm run coverage
-  - bash <(curl -s https://codecov.io/bash)
+after_success:
+  - npm run test-ci && npm run coverage
+  - bash <(curl -s https://codecov.io/bash) -d -t 0c415f8f-43bf-4cc3-8e19-5249e1b317d9
