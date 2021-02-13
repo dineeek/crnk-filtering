@@ -8,7 +8,9 @@
     "build-crnk-filtering": "ng build crnk-filtering --prod",
     "publish-crnk-filtering": "cd dist/crnk-filtering && npm publish --access=public",
     "build-ci": "ng build crnk-filtering --prod",
-    "test-ci": "ng test crnk-filtering --watch=false --browsers=ChromeHeadless"
+    "test-ci": "ng test crnk-filtering --watch=false --browsers=ChromeHeadless",
+    "report-coverage": "nyc report --reporter=text-lcov --recursive \"./spec/**/*.spec.js\" > coverage.lcov && codecov",
+    "coverage": "codecov --disable=gcov"
   },
   "private": true,
   "dependencies": {
