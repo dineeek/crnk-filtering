@@ -7,37 +7,37 @@ import { SortSpec } from './sort/sort-spec';
  * @param filterSpecs - Array of FilterSpec which values goes through filtering.
  */
 export function filterArray(filterSpecs: Array<FilterSpec>): Array<FilterSpec> {
-  return filterSpecs.filter((filterSpec) => {
-    if (!filterSpec || !filterSpec.isPathValid()) {
-      return false;
-    }
+	return filterSpecs.filter(filterSpec => {
+		if (!filterSpec || !filterSpec.isPathValid()) {
+			return false;
+		}
 
-    if (typeof filterSpec.value === 'string') {
-      filterSpec.value = filterSpec.value.trim();
-      return filterSpec.value.length;
-    }
+		if (typeof filterSpec.value === 'string') {
+			filterSpec.value = filterSpec.value.trim();
+			return filterSpec.value.length;
+		}
 
-    if (filterSpec.value instanceof Date) {
-      return (
-        !Number.isNaN(filterSpec.value.getDate()) ||
-        !Number.isNaN(filterSpec.value.getFullYear())
-      );
-    }
+		if (filterSpec.value instanceof Date) {
+			return (
+				!Number.isNaN(filterSpec.value.getDate()) ||
+				!Number.isNaN(filterSpec.value.getFullYear())
+			);
+		}
 
-    if (filterSpec.value instanceof Array) {
-      filterSpec.value = compact(filterSpec.value);
-      if (isArrayFullOfStrings(filterSpec.value)) {
-        filterSpec.value = compact(getTrimmedStringsArray(filterSpec.value));
-        return filterSpec.value.length;
-      } else if (isArrayContainingString(filterSpec.value)) {
-        filterSpec.value = compact(trimStringsInsideArray(filterSpec.value));
-        return filterSpec.value.length;
-      }
-      return filterSpec.value.length;
-    }
+		if (filterSpec.value instanceof Array) {
+			filterSpec.value = compact(filterSpec.value);
+			if (isArrayFullOfStrings(filterSpec.value)) {
+				filterSpec.value = compact(getTrimmedStringsArray(filterSpec.value));
+				return filterSpec.value.length;
+			} else if (isArrayContainingString(filterSpec.value)) {
+				filterSpec.value = compact(trimStringsInsideArray(filterSpec.value));
+				return filterSpec.value.length;
+			}
+			return filterSpec.value.length;
+		}
 
-    return filterSpec.isValueValid();
-  });
+		return filterSpec.isValueValid();
+	});
 }
 
 /**
@@ -46,13 +46,13 @@ export function filterArray(filterSpecs: Array<FilterSpec>): Array<FilterSpec> {
  * @param arr - Array to perform action.
  */
 function compact(arr: any[]): any[] {
-  return arr.filter(
-    (element) =>
-      element !== null &&
-      element !== undefined &&
-      element !== '' &&
-      !Number.isNaN(element)
-  );
+	return arr.filter(
+		element =>
+			element !== null &&
+			element !== undefined &&
+			element !== '' &&
+			!Number.isNaN(element)
+	);
 }
 
 /**
@@ -61,7 +61,7 @@ function compact(arr: any[]): any[] {
  * @param arr - Array to check if all elements are string.
  */
 function isArrayFullOfStrings(arr: any[]): boolean {
-  return arr.every((element: any) => typeof element === 'string');
+	return arr.every((element: any) => typeof element === 'string');
 }
 
 /**
@@ -70,7 +70,7 @@ function isArrayFullOfStrings(arr: any[]): boolean {
  * @param arr - Array to search for string type.
  */
 function isArrayContainingString(arr: any[]): boolean {
-  return arr.some((element: any) => typeof element === 'string');
+	return arr.some((element: any) => typeof element === 'string');
 }
 
 /**
@@ -79,7 +79,7 @@ function isArrayContainingString(arr: any[]): boolean {
  * @param arr - String array to perform trimming on its elements.
  */
 function getTrimmedStringsArray(arr: string[]): string[] {
-  return arr.map((element: string) => element.trim());
+	return arr.map((element: string) => element.trim());
 }
 
 /**
@@ -88,12 +88,12 @@ function getTrimmedStringsArray(arr: string[]): string[] {
  * @param arr - Array to search for strings values to re
  */
 function trimStringsInsideArray(arr: any[]): any[] {
-  return arr.map((element: any) => {
-    if (typeof element === 'string') {
-      element = element.trim();
-    }
-    return element;
-  });
+	return arr.map((element: any) => {
+		if (typeof element === 'string') {
+			element = element.trim();
+		}
+		return element;
+	});
 }
 
 /**
@@ -102,18 +102,18 @@ function trimStringsInsideArray(arr: any[]): any[] {
  * @param stringParams - One or many included string params.
  */
 export function getStringParams(
-  stringParams: string | Array<string>
+	stringParams: string | Array<string>
 ): string | null {
-  const params =
-    stringParams instanceof Array
-      ? filterEmptyStringValues(stringParams)
-      : filterEmptyStringValues(new Array<string>(stringParams));
+	const params =
+		stringParams instanceof Array
+			? filterEmptyStringValues(stringParams)
+			: filterEmptyStringValues(new Array<string>(stringParams));
 
-  if (!params.length) {
-    return null;
-  }
+	if (!params.length) {
+		return null;
+	}
 
-  return params.length > 1 ? params.join(',') : params[0];
+	return params.length > 1 ? params.join(',') : params[0];
 }
 
 /**
@@ -122,7 +122,7 @@ export function getStringParams(
  * @param arr - String array to perform action.
  */
 function filterEmptyStringValues(arr: string[]): string[] {
-  return compact(trimStringsInsideArray(arr));
+	return compact(trimStringsInsideArray(arr));
 }
 
 /**
@@ -131,27 +131,27 @@ function filterEmptyStringValues(arr: string[]): string[] {
  * @param sortSpecs - One or many SortSpecs.
  */
 export function getSortingParams(
-  sortSpecs: SortSpec | Array<SortSpec>
+	sortSpecs: SortSpec | Array<SortSpec>
 ): string | null {
-  if (!sortSpecs) {
-    return null;
-  }
+	if (!sortSpecs) {
+		return null;
+	}
 
-  if (sortSpecs instanceof Array) {
-    let sortParams: string[] = [];
+	if (sortSpecs instanceof Array) {
+		let sortParams: string[] = [];
 
-    sortParams = sortSpecs
-      .filter((sortSpec) => sortSpec.sortParam)
-      .map((sortSpec) => sortSpec.sortParam);
+		sortParams = sortSpecs
+			.filter(sortSpec => sortSpec.sortParam)
+			.map(sortSpec => sortSpec.sortParam);
 
-    if (!sortParams.length) {
-      return null;
-    }
+		if (!sortParams.length) {
+			return null;
+		}
 
-    return sortParams.length > 1 ? sortParams.join(',') : sortParams[0];
-  } else {
-    return sortSpecs.sortParam;
-  }
+		return sortParams.length > 1 ? sortParams.join(',') : sortParams[0];
+	} else {
+		return sortSpecs.sortParam;
+	}
 }
 
 /**
@@ -160,28 +160,28 @@ export function getSortingParams(
  * If the array contains only one value then filter value losses array data type and it is passed as a single value.
  */
 export function transformLikeValuesToString(
-  value: any,
-  filterType: 'BASIC' | 'NESTED'
+	value: any,
+	filterType: 'BASIC' | 'NESTED'
 ): void {
-  if (value instanceof Array) {
-    const percentageSignValues: string[] = [];
-    value.forEach((element: any) => {
-      filterType === 'BASIC'
-        ? percentageSignValues.push(element + '%')
-        : percentageSignValues.push('"' + element + '%"');
-    });
+	if (value instanceof Array) {
+		const percentageSignValues: string[] = [];
+		value.forEach((element: any) => {
+			filterType === 'BASIC'
+				? percentageSignValues.push(element + '%')
+				: percentageSignValues.push('"' + element + '%"');
+		});
 
-    value =
-      percentageSignValues.length === 1
-        ? percentageSignValues[0]
-        : filterType === 'BASIC'
-        ? percentageSignValues.join(',')
-        : '[' + percentageSignValues.join(', ') + ']';
-  } else {
-    value = filterType === 'BASIC' ? value + '%' : '"' + value + '%"';
-  }
+		value =
+			percentageSignValues.length === 1
+				? percentageSignValues[0]
+				: filterType === 'BASIC'
+				? percentageSignValues.join(',')
+				: '[' + percentageSignValues.join(', ') + ']';
+	} else {
+		value = filterType === 'BASIC' ? value + '%' : '"' + value + '%"';
+	}
 
-  return value;
+	return value;
 }
 
 /**
@@ -189,19 +189,19 @@ export function transformLikeValuesToString(
  * If the array contains only one value then filter value losses array data type and is passed as a single value.
  */
 export function transformValuesToString(value: any): void {
-  if (value instanceof Array) {
-    const quoteMarkedValues: string[] = [];
-    value.forEach((element: any) => {
-      quoteMarkedValues.push('"' + element + '"');
-    });
+	if (value instanceof Array) {
+		const quoteMarkedValues: string[] = [];
+		value.forEach((element: any) => {
+			quoteMarkedValues.push('"' + element + '"');
+		});
 
-    value =
-      quoteMarkedValues.length === 1
-        ? quoteMarkedValues[0]
-        : '[' + quoteMarkedValues.join(', ') + ']';
-  } else {
-    value = value !== null ? '"' + value + '"' : value;
-  }
+		value =
+			quoteMarkedValues.length === 1
+				? quoteMarkedValues[0]
+				: '[' + quoteMarkedValues.join(', ') + ']';
+	} else {
+		value = value !== null ? '"' + value + '"' : value;
+	}
 
-  return value;
+	return value;
 }
