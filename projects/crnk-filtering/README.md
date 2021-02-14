@@ -22,6 +22,8 @@ Crnk-filtering is a Typescript package for generating CRNK resource filter strin
 - [Pagination] (https://www.crnk.io/releases/stable/documentation/#_pagination) - from v2.1.0
 - [Sparse fieldsets] (https://www.crnk.io/releases/stable/documentation/#_sparse_fieldsets) - from v3.0.0
 
+**[View live demo on StackBlitz.](https://crnk-filtering.stackblitz.io)**
+
 ### Installation
 
 ```sh

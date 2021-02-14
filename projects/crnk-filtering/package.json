@@ -29,6 +29,7 @@
     "angular",
     "library"
   ],
+  "license": "Apache",
   "homepage": "https://github.com/dineeek/crnk-filtering/blob/main/README.md",
   "bugs": {
     "url": "https://github.com/dineeek/crnk-filtering/issues"
