@@ -113,7 +113,8 @@ const innerNestedFilter = new NestedFilter({filterSpecs: innerFilterSpecArray, n
 {"OR": [{"user":{"EQ": {"id": "100"}}}, {"user":{"EQ": {"age": "30"}}}]}
 
 // Then create main filter string calling this method:
-const nestedFilter = new NestedFilter({filterSpecs: filterSpecArray, nestingCondition: NestingOperator.And, innerNestedFilter: innerNestedFilter.buildFilterString()});
+const nestedFilter = new NestedFilter({filterSpecs: filterSpecArray, nestingCondition: NestingOperator.And, innerNestedFilter: innerNestedFilter.buildFilterString()}); // You can add multiple inner nested filters
+
 // Result example of the whole filter string:
 {"AND": [{"EQ": {"zip": "70"}}, {"OR": [{"user":{"EQ": {"id": "100"}}}, {"user":{"EQ": {"age": "30"}}}]}]}
 ```

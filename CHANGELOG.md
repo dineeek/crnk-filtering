@@ -23,3 +23,9 @@
 #### Feats
 
 - [Sparse fieldsets] (https://www.crnk.io/releases/stable/documentation/#_sparse_fieldsets)
+
+### 3.3.0
+
+#### Feats
+
+- Adjusted NestedFilter to accept multiple inner filter strings

@@ -1,6 +1,6 @@
 {
   "name": "crnk-filtering",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "author": "Dino Klicek",
   "scripts": {
     "test": "ng test --code-coverage",
