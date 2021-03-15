@@ -138,6 +138,10 @@ export function getSortingParams(
 	}
 
 	if (sortSpecs instanceof Array) {
+		if (!sortSpecs.length) {
+			return null;
+		}
+
 		let sortParams: string[] = [];
 
 		sortParams = sortSpecs
@@ -149,9 +153,13 @@ export function getSortingParams(
 		}
 
 		return sortParams.length > 1 ? sortParams.join(',') : sortParams[0];
-	} else {
-		return sortSpecs.sortParam;
 	}
+
+	if (!sortSpecs.sortParam) {
+		return null;
+	}
+
+	return sortSpecs.sortParam;
 }
 
 /**

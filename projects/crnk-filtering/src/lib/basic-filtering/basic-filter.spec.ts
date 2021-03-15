@@ -1,3 +1,4 @@
+import { PageEvent } from '@angular/material/paginator';
 import { FilterSpec } from '../filter-specification/FilterSpec';
 import { FilterOperator } from '../utils/crnk-operators';
 import { PaginationSpec } from '../utils/pagination/pagination-spec';
@@ -6,7 +7,22 @@ import { SortSpec } from '../utils/sort/sort-spec';
 import { BasicFilter } from './BasicFilter';
 
 describe('Basic-filtering', () => {
-	it('should be create string with one filter', () => {
+	it('should be create string with one single filter', () => {
+		const filterArray = [
+			new FilterSpec('user.name', ['Auto'], FilterOperator.Like)
+		];
+		const basicFilter = new BasicFilter({
+			filterSpecs: filterArray
+		});
+
+		expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
+			'filter[user.name][LIKE]=Auto%'
+		);
+
+		expect(basicFilter.isAnyFilter()).toEqual(true);
+	});
+
+	it('should be create string with one filter in array', () => {
 		const filterArray = [
 			new FilterSpec('user.name', 'Auto', FilterOperator.Like)
 		];
@@ -366,5 +382,32 @@ describe('Basic-filtering', () => {
 		expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
 			'filter[user.name][LIKE]=Auto%&filter[user.number][EQ]=null&filter[user.address][LIKE]=Strasse%'
 		);
+	});
+
+	it('should test if there is any filter, sorting and pagination', () => {
+		const filterArray = [
+			new FilterSpec('', '    ', FilterOperator.Like),
+			new FilterSpec('user.number', NaN, FilterOperator.Equals),
+			new FilterSpec(
+				'user.date',
+				new Date(undefined as any),
+				FilterOperator.Equals,
+				undefined
+			)
+		];
+
+		const nonFilters = new BasicFilter({ filterSpecs: filterArray });
+		expect(nonFilters.isAnyFilter()).toEqual(false);
+
+		nonFilters.sortBy(new SortSpec(null as any, undefined as any));
+
+		nonFilters.sortBy(new SortSpec('asc', 'username'));
+		nonFilters.sortBy(new SortSpec('desc', 'username'));
+
+		const paginationSpec = new PaginationSpec();
+		paginationSpec.setPagination(undefined as any);
+		expect(decodeURI(paginationSpec.getHttpParams().toString())).toBeFalsy();
+		paginationSpec.setPagination(new PageEvent());
+		expect(decodeURI(paginationSpec.getHttpParams().toString())).toBeTruthy();
 	});
 });

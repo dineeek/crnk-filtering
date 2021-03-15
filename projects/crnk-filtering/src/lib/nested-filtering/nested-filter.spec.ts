@@ -20,11 +20,25 @@ describe('Nested-filtering', () => {
 	it('should be created nested filter string with single filter', () => {
 		const nestedFilter = new NestedFilter({
 			filterSpecs: new FilterSpec('auto', 'Mazda       ')
-		}).getHttpParams();
+		});
 
-		expect(decodeURI(nestedFilter.toString())).toBe(
+		expect(decodeURI(nestedFilter.getHttpParams().toString())).toBe(
 			'filter={"EQ": {"auto": "Mazda"}}'
 		);
+
+		expect(nestedFilter.isAnyFilter()).toEqual(true);
+	});
+
+	it('should be created nested filter string with single filter and array values', () => {
+		const nestedFilter = new NestedFilter({
+			filterSpecs: [new FilterSpec('auto', ['Mazda       ', null])]
+		});
+
+		expect(decodeURI(nestedFilter.getHttpParams().toString())).toBe(
+			'filter={"EQ": {"auto": "Mazda"}}'
+		);
+
+		expect(nestedFilter.isAnyFilter()).toEqual(true);
 	});
 
 	it('should be created nested filter string with date filter', () => {
@@ -36,6 +50,7 @@ describe('Nested-filtering', () => {
 					new Date('2012-07-28').toISOString(),
 					FilterOperator.Equals
 				),
+				new FilterSpec('dealer.date', new Date('asd'), FilterOperator.Equals),
 				new FilterSpec('insured', false, FilterOperator.Equals),
 				new FilterSpec('firstOwner', true, FilterOperator.Equals)
 			]
@@ -539,5 +554,32 @@ describe('Nested-filtering', () => {
 		expect(decodeURI(nestedFilter.toString())).toBe(
 			'filter={"AND": [{"EQ": {"auto": null}}, {"EQ": {"insured": "false"}}, {"EQ": {"firstOwner": "Dinko"}}]}'
 		);
+	});
+
+	it('should test if there is any filter and deprecated sorting', () => {
+		const filterArray = [
+			new FilterSpec('user.id', [1, 2, 3, undefined], FilterOperator.Equals),
+			new FilterSpec('user.contact.email', null, FilterOperator.Equals, true),
+			new FilterSpec(
+				'user.contact.address',
+				undefined,
+				FilterOperator.Equals,
+				true
+			),
+			new FilterSpec('user.date', new Date('gasfasd'), FilterOperator.Equals),
+			new FilterSpec('user.code', null, FilterOperator.Equals, undefined)
+		];
+
+		const nestedFilter = new NestedFilter({ filterSpecs: filterArray });
+		nestedFilter.sortBy(new SortSpec('', ''));
+		nestedFilter.sortBy([]);
+		nestedFilter.sortBy(undefined as any);
+		expect(nestedFilter.isAnyFilter()).toEqual(true);
+
+		expect(nestedFilter.buildFilterString()).toEqual(
+			'{"AND": [{"user": {"EQ": {"id": ["1", "2", "3"]}}}, {"user": {"contact": {"EQ": {"email": null}}}}]}'
+		);
+		nestedFilter.sortBy(new SortSpec('asc', 'user.id'));
+		nestedFilter.sortBy(new SortSpec('desc', 'user.id'));
 	});
 });

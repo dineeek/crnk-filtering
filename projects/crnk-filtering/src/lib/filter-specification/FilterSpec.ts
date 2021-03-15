@@ -51,11 +51,7 @@ export class FilterSpec {
 			return !this.isFalsyValue();
 		}
 
-		if (!this.nullable) {
-			return this.value !== null && !this.isFalsyValue();
-		}
-
-		return true;
+		return this.value !== null && !this.isFalsyValue();
 	}
 
 	private isFalsyValue(): boolean {
