@@ -8,6 +8,23 @@ import { BasicFilter } from './BasicFilter';
 
 describe('Basic-filtering', () => {
 	it('should be create string with one single filter', () => {
+		const filterArray = new FilterSpec(
+			'user.name',
+			'Auto',
+			FilterOperator.Like
+		);
+		const basicFilter = new BasicFilter({
+			filterSpecs: filterArray
+		});
+
+		expect(decodeURI(basicFilter.getHttpParams().toString())).toBe(
+			'filter[user.name][LIKE]=Auto%'
+		);
+
+		expect(basicFilter.isAnyFilter()).toEqual(true);
+	});
+
+	it('should be create string with one single filter in array', () => {
 		const filterArray = [
 			new FilterSpec('user.name', ['Auto'], FilterOperator.Like)
 		];
