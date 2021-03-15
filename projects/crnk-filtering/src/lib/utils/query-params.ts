@@ -10,7 +10,7 @@ export interface BasicQueryParameters {
 export interface NestedQueryParameters {
 	filterSpecs: FilterSpec | Array<FilterSpec>;
 	nestingCondition?: NestingOperatorType;
-	innerNestedFilter?: string;
+	innerNestedFilter?: string | string[];
 	relatedResources?: string | Array<string>;
 	sparseFieldsets?: string | Array<string>;
 }

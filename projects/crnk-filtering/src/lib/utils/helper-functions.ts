@@ -102,7 +102,8 @@ function trimStringsInsideArray(arr: any[]): any[] {
  * @param stringParams - One or many included string params.
  */
 export function getStringParams(
-	stringParams: string | Array<string>
+	stringParams: string | Array<string>,
+	spaceBetween?: boolean
 ): string | null {
 	const params =
 		stringParams instanceof Array
@@ -113,7 +114,11 @@ export function getStringParams(
 		return null;
 	}
 
-	return params.length > 1 ? params.join(',') : params[0];
+	return params.length > 1
+		? spaceBetween
+			? params.join(', ')
+			: params.join(',')
+		: params[0];
 }
 
 /**

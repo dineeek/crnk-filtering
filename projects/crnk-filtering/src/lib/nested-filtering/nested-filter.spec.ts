@@ -582,4 +582,40 @@ describe('Nested-filtering', () => {
 		nestedFilter.sortBy(new SortSpec('asc', 'user.id'));
 		nestedFilter.sortBy(new SortSpec('desc', 'user.id'));
 	});
+
+	it('should be create nested filter with multiple another nested filter strings', () => {
+		const nestedFilterUser = new NestedFilter({
+			filterSpecs: filterArrayUser,
+			nestingCondition: NestingOperator.And
+		});
+
+		const nestedFilterCompany = new NestedFilter({
+			filterSpecs: [
+				new FilterSpec(
+					'company.id',
+					[1, 2, 3, undefined],
+					FilterOperator.Equals
+				),
+				new FilterSpec('company.contact.email', 'Emil@', FilterOperator.Like),
+				new FilterSpec(
+					'company.code',
+					[15153, , , undefined, '651515', '  ', 4121, , '', null, 'IBM'],
+					FilterOperator.Equals
+				)
+			]
+		});
+
+		const nestedFilterClient = new NestedFilter({
+			filterSpecs: filterArrayClient,
+			nestingCondition: NestingOperator.Or,
+			innerNestedFilter: [
+				nestedFilterUser.buildFilterString(),
+				nestedFilterCompany.buildFilterString()
+			]
+		}).getHttpParams();
+
+		expect(decodeURI(nestedFilterClient.toString())).toBe(
+			'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}, {"AND": [{"user": {"GE": {"number": "30000"}}}, {"user": {"LIKE": {"name": "Emil%"}}}, {"user": {"contact": {"LIKE": {"email": "Emil@%"}}}}]}, {"AND": [{"company": {"EQ": {"id": ["1", "2", "3"]}}}, {"company": {"contact": {"LIKE": {"email": "Emil@%"}}}}, {"company": {"EQ": {"code": ["15153", "651515", "4121", "IBM"]}}}]}]}'
+		);
+	});
 });

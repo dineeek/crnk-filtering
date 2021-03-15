@@ -43,7 +43,7 @@ export class NestedFilter {
 			: NestingOperator.And;
 
 		this.innerNestedFilter = queryParams.innerNestedFilter
-			? queryParams.innerNestedFilter
+			? getStringParams(queryParams.innerNestedFilter, true)
 			: null;
 
 		this.relatedResources = queryParams.relatedResources
