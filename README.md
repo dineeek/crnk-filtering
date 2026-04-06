@@ -34,23 +34,20 @@ import {
   BasicFilter,
   FilterSpec,
   FilterOperator,
-  SortSpec,
   SortDirection,
-  PaginationSpec,
 } from 'crnk-filtering';
 
 const query = new BasicFilter({
-  filterSpecs: [
-    new FilterSpec('user.name', 'Dino', FilterOperator.Like),
-    new FilterSpec('user.age', 25, FilterOperator.GreaterOrEquals),
-  ],
+  filterSpecs: FilterSpec.of(
+    ['user.name', 'Dino', FilterOperator.Like],
+    ['user.age', 25, FilterOperator.GreaterOrEquals],
+  ),
   relatedResources: 'client',
 })
-  .sortBy(new SortSpec('user.name', SortDirection.ASC))
-  .paginate(new PaginationSpec(0, 20))
+  .sortBy('user.name', SortDirection.ASC)
+  .paginate(0, 20)
   .toString();
 
-// Result:
 // include=client&filter[user.name][LIKE]=Dino%&filter[user.age][GE]=25&sort=user.name&page[limit]=20&page[offset]=0
 ```
 
@@ -74,6 +71,7 @@ axios.get('/api/users', { params: filter.getParams() });
 | Export | Description |
 |-|-|
 | `FilterSpec` | A single filter (path + value + operator) |
+| `FilterSpec.of()` | Static factory — creates `FilterSpec[]` from tuples |
 | `BasicFilter` | Builds flat CRNK filter query params |
 | `NestedFilter` | Builds JSON-based nested filter query params |
 | `FilterOperator` | Enum: `EQ`, `NEQ`, `LIKE`, `LT`, `LE`, `GT`, `GE` |
@@ -83,31 +81,53 @@ axios.get('/api/users', { params: filter.getParams() });
 | `PaginationSpec` | Offset/limit pagination |
 | `toQueryString()` | Converts `Record<string, string>` to a query string |
 | `PageEvent` | Interface: `{ pageIndex, pageSize, length }` |
+| `FilterSpecDef` | Tuple type: `[path, value, operator?, nullable?]` |
 
 ## FilterSpec
 
 A filter is represented by a `FilterSpec`. It holds the **path** to the attribute, the filter **value**, and the **operator**.
 
 ```ts
-// Defaults to FilterOperator.Equals
-new FilterSpec('user.id', 12);
-
-// Explicit operator
+// Individual instance
 new FilterSpec('user.name', 'Dino', FilterOperator.Like);
 
 // Nullable — allows null as a valid value
 new FilterSpec('user.deletedAt', null, FilterOperator.Equals, true);
 ```
 
+### `FilterSpec.of()` — batch creation (recommended)
+
+Create multiple filters in one call using concise tuples:
+
+```ts
+FilterSpec.of(
+  ['user.id', 12],                                  // defaults to EQ
+  ['user.name', 'Dino', FilterOperator.Like],       // explicit operator
+  ['user.deletedAt', null, FilterOperator.Equals, true], // nullable
+)
+// Returns FilterSpec[]
+```
+
+You can also pass tuples directly to `filterSpecs`:
+
+```ts
+new BasicFilter({
+  filterSpecs: [
+    ['user.id', 12],
+    ['user.name', 'Dino', FilterOperator.Like],
+  ],
+})
+```
+
 ## Basic filtering
 
 ```ts
 const result = new BasicFilter({
-  filterSpecs: [
-    new FilterSpec('user.id', 12, FilterOperator.Equals),
-    new FilterSpec('user.name', 'Dino', FilterOperator.Like),
-    new FilterSpec('user.age', 25, FilterOperator.GreaterOrEquals),
-  ],
+  filterSpecs: FilterSpec.of(
+    ['user.id', 12],
+    ['user.name', 'Dino', FilterOperator.Like],
+    ['user.age', 25, FilterOperator.GreaterOrEquals],
+  ),
 }).toString();
 
 // filter[user.id][EQ]=12&filter[user.name][LIKE]=Dino%&filter[user.age][GE]=25
@@ -117,10 +137,10 @@ const result = new BasicFilter({
 
 ```ts
 const result = new NestedFilter({
-  filterSpecs: [
-    new FilterSpec('user.id', 12, FilterOperator.Equals),
-    new FilterSpec('user.name', 'Dino', FilterOperator.Like),
-  ],
+  filterSpecs: FilterSpec.of(
+    ['user.id', 12],
+    ['user.name', 'Dino', FilterOperator.Like],
+  ),
   nestingCondition: NestingOperator.And,
 }).toString();
 
@@ -144,14 +164,15 @@ const result = new NestedFilter({
 
 ## Sorting
 
-All filter classes support fluent `.sortBy()`:
+All filter classes support fluent `.sortBy()` — pass inline args or `SortSpec` instances:
 
 ```ts
+// Inline (recommended)
 new BasicFilter({ filterSpecs })
-  .sortBy(new SortSpec('user.name', SortDirection.ASC))
+  .sortBy('user.name', SortDirection.ASC)
   .toString();
 
-// Multiple sort fields
+// Multiple sort fields via SortSpec
 new BasicFilter({ filterSpecs })
   .sortBy([
     new SortSpec('user.name', SortDirection.ASC),
@@ -187,13 +208,18 @@ new NestedFilter({
 `PaginationSpec` is **framework-agnostic** — no Angular Material dependency.
 
 ```ts
-// Built-in via chaining
+// Inline (recommended)
 new BasicFilter({ filterSpecs })
-  .paginate(new PaginationSpec(0, 20))
+  .paginate(0, 20)
   .toString();
 // ...&page[limit]=20&page[offset]=0
 
-// Or standalone — merge with existing params
+// Via PaginationSpec instance
+new BasicFilter({ filterSpecs })
+  .paginate(new PaginationSpec(0, 20))
+  .toString();
+
+// Standalone — merge with existing params
 const pagination = new PaginationSpec(0, 20);
 const allParams = pagination.withParams(filter.getParams());
 const queryString = toQueryString(allParams);

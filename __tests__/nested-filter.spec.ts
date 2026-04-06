@@ -682,3 +682,90 @@ describe('NestedFilter', () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// Ergonomic API — FilterSpec.of(), inline sortBy/paginate, tuple filterSpecs
+// ---------------------------------------------------------------------------
+
+describe('NestedFilter — ergonomic API', () => {
+  it('should accept FilterSpec.of() tuple definitions', () => {
+    const result = new NestedFilter({
+      filterSpecs: FilterSpec.of(
+        ['user.id', 12, FilterOperator.Equals],
+        ['user.name', 'Dino', FilterOperator.Like],
+      ),
+      nestingCondition: NestingOperator.And,
+    }).toString();
+
+    expect(result).toBe(
+      'filter={"AND": [{"user": {"EQ": {"id": "12"}}}, {"user": {"LIKE": {"name": "Dino%"}}}]}',
+    );
+  });
+
+  it('should accept raw tuple arrays in filterSpecs', () => {
+    const result = new NestedFilter({
+      filterSpecs: [
+        ['client.id', '16512'],
+        ['client.name', 'Jag', FilterOperator.Like],
+      ],
+      nestingCondition: NestingOperator.Or,
+    }).toString();
+
+    expect(result).toBe(
+      'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}',
+    );
+  });
+
+  it('should support inline sortBy(path, direction)', () => {
+    const result = new NestedFilter({
+      filterSpecs: FilterSpec.of(
+        ['client.id', '16512'],
+        ['client.name', 'Jag', FilterOperator.Like],
+      ),
+      nestingCondition: NestingOperator.Or,
+      relatedResources: 'client',
+    })
+      .sortBy('user.name', SortDirection.DESC)
+      .toString();
+
+    expect(result).toBe(
+      'include=client&filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}&sort=-user.name',
+    );
+  });
+
+  it('should support inline paginate(pageIndex, pageSize)', () => {
+    const result = new NestedFilter({
+      filterSpecs: FilterSpec.of(
+        ['client.id', '16512'],
+        ['client.name', 'Jag', FilterOperator.Like],
+      ),
+      nestingCondition: NestingOperator.Or,
+    })
+      .sortBy('user.name', SortDirection.ASC)
+      .paginate(0, 20)
+      .toString();
+
+    expect(result).toBe(
+      'filter={"OR": [{"client": {"EQ": {"id": "16512"}}}, {"client": {"LIKE": {"name": "Jag%"}}}]}&sort=user.name&page[limit]=20&page[offset]=0',
+    );
+  });
+
+  it('should combine all ergonomic features in a single chain', () => {
+    const result = new NestedFilter({
+      filterSpecs: FilterSpec.of(
+        ['user.name', 'Dino', FilterOperator.Like],
+        ['user.age', 25, FilterOperator.GreaterOrEquals],
+      ),
+      nestingCondition: NestingOperator.And,
+      relatedResources: 'client',
+      sparseFieldsets: ['user.name', 'user.age'],
+    })
+      .sortBy('user.name', SortDirection.ASC)
+      .paginate(1, 20)
+      .toString();
+
+    expect(result).toBe(
+      'include=client&filter={"AND": [{"user": {"LIKE": {"name": "Dino%"}}}, {"user": {"GE": {"age": "25"}}}]}&fields=user.name,user.age&sort=user.name&page[limit]=20&page[offset]=20',
+    );
+  });
+});
+

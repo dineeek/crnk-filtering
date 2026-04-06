@@ -1,6 +1,27 @@
 import { FilterSpec } from './filter-spec';
 import { SortSpec } from './sort';
-import type { FilterValue } from './types';
+import type { FilterValue, FilterSpecDef } from './types';
+
+// ---------------------------------------------------------------------------
+// Spec normalisation
+// ---------------------------------------------------------------------------
+
+/**
+ * Accepts FilterSpec instances, a single FilterSpec, or tuple definitions
+ * and returns a validated FilterSpec[].
+ */
+export function normalizeSpecs(
+  input: FilterSpec | FilterSpec[] | FilterSpecDef[],
+): FilterSpec[] {
+  if (input instanceof FilterSpec) return [input];
+  if (input.length === 0) return [];
+
+  // If first element is a FilterSpec instance, treat entire array as FilterSpec[]
+  if (input[0] instanceof FilterSpec) return input as FilterSpec[];
+
+  // Otherwise treat as tuple definitions
+  return FilterSpec.of(...(input as FilterSpecDef[]));
+}
 
 // ---------------------------------------------------------------------------
 // Filter array validation

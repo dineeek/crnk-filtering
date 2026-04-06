@@ -1,9 +1,10 @@
 import { FilterSpec } from './filter-spec';
-import { FilterOperator } from './operators';
+import { FilterOperator, SortDirection } from './operators';
 import { PaginationSpec } from './pagination';
 import { SortSpec } from './sort';
 import {
   filterArray,
+  normalizeSpecs,
   getSortingParams,
   getStringParams,
   toQueryString,
@@ -15,9 +16,14 @@ import type { BasicQueryParams } from './types';
  *
  * Supports fluent chaining:
  * ```ts
- * new BasicFilter({ filterSpecs: [...] })
- *   .sortBy(new SortSpec('user.name', SortDirection.ASC))
- *   .paginate(new PaginationSpec(0, 20))
+ * new BasicFilter({
+ *   filterSpecs: FilterSpec.of(
+ *     ['user.name', 'Dino', FilterOperator.Like],
+ *     ['user.age', 25, FilterOperator.GreaterOrEquals],
+ *   ),
+ * })
+ *   .sortBy('user.name', SortDirection.ASC)
+ *   .paginate(0, 20)
  *   .toString();
  * ```
  */
@@ -29,11 +35,7 @@ export class BasicFilter {
   private readonly sparseFieldsets: string | null;
 
   constructor(queryParams: BasicQueryParams) {
-    const specs = Array.isArray(queryParams.filterSpecs)
-      ? queryParams.filterSpecs
-      : [queryParams.filterSpecs];
-
-    this.filterSpecs = filterArray(specs);
+    this.filterSpecs = filterArray(normalizeSpecs(queryParams.filterSpecs));
 
     this.relatedResources = queryParams.relatedResources
       ? getStringParams(queryParams.relatedResources)
@@ -44,15 +46,32 @@ export class BasicFilter {
       : null;
   }
 
-  /** Sets sorting. Returns `this` for chaining. */
-  sortBy(sortSpecs: SortSpec | SortSpec[]): this {
-    this.sort = getSortingParams(sortSpecs);
+  /** Sets sorting. Accepts SortSpec instance(s) or inline `(path, direction)`. */
+  sortBy(sortSpecs: SortSpec | SortSpec[]): this;
+  sortBy(path: string, direction: SortDirection): this;
+  sortBy(
+    pathOrSpecs: string | SortSpec | SortSpec[],
+    direction?: SortDirection,
+  ): this {
+    if (typeof pathOrSpecs === 'string') {
+      this.sort = getSortingParams(new SortSpec(pathOrSpecs, direction!));
+    } else {
+      this.sort = getSortingParams(pathOrSpecs);
+    }
     return this;
   }
 
-  /** Sets pagination. Returns `this` for chaining. */
-  paginate(spec: PaginationSpec): this {
-    this.paginationSpec = spec;
+  /** Sets pagination. Accepts a PaginationSpec or inline `(pageIndex, pageSize)`. */
+  paginate(spec: PaginationSpec): this;
+  paginate(pageIndex: number, pageSize: number): this;
+  paginate(
+    specOrIndex: PaginationSpec | number,
+    pageSize?: number,
+  ): this {
+    this.paginationSpec =
+      specOrIndex instanceof PaginationSpec
+        ? specOrIndex
+        : new PaginationSpec(specOrIndex, pageSize);
     return this;
   }
 

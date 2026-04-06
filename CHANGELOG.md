@@ -12,6 +12,10 @@
 #### Features
 
 - Fluent method chaining — `sortBy()` and `paginate()` return `this`
+- `FilterSpec.of()` static factory — create multiple filters from concise tuples
+- `FilterSpecDef` tuple type — pass raw `[path, value, operator?, nullable?]` arrays directly to `filterSpecs`
+- Inline `sortBy(path, direction)` overload — no need to instantiate `SortSpec` for single sorts
+- Inline `paginate(pageIndex, pageSize)` overload — no need to instantiate `PaginationSpec`
 - New `paginate()` method on `BasicFilter` and `NestedFilter`
 - New `toQueryString()` utility function
 - New `PaginationSpec.withParams()` for merging params

@@ -1,6 +1,6 @@
 import { FilterOperator } from './operators';
 import { transformLikeValues, transformValues } from './helpers';
-import type { FilterValue } from './types';
+import type { FilterValue, FilterSpecDef } from './types';
 
 export class FilterSpec {
   public pathSpec: string;
@@ -29,6 +29,24 @@ export class FilterSpec {
     this.value = filterValue;
     this.operator = filterOperator;
     this.nullable = nullable;
+  }
+
+  /**
+   * Creates multiple FilterSpecs from concise tuple definitions.
+   *
+   * ```ts
+   * FilterSpec.of(
+   *   ['user.id', 12],
+   *   ['user.name', 'Dino', FilterOperator.Like],
+   *   ['user.deletedAt', null, FilterOperator.Equals, true],
+   * )
+   * ```
+   */
+  static of(...defs: FilterSpecDef[]): FilterSpec[] {
+    return defs.map(
+      ([path, value, operator, nullable]) =>
+        new FilterSpec(path, value, operator, nullable),
+    );
   }
 
   /** Validates that the path is a non-empty string after trimming. */

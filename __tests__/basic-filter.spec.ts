@@ -424,3 +424,100 @@ describe('BasicFilter', () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// Ergonomic API — FilterSpec.of(), inline sortBy/paginate
+// ---------------------------------------------------------------------------
+
+describe('BasicFilter — ergonomic API', () => {
+  it('should accept FilterSpec.of() tuple definitions', () => {
+    const result = new BasicFilter({
+      filterSpecs: FilterSpec.of(
+        ['user.name', 'Auto', FilterOperator.Like],
+        ['user.number', '265112', FilterOperator.Equals],
+      ),
+    }).toString();
+
+    expect(result).toBe(
+      'filter[user.name][LIKE]=Auto%&filter[user.number][EQ]=265112',
+    );
+  });
+
+  it('should accept raw tuple arrays in filterSpecs', () => {
+    const result = new BasicFilter({
+      filterSpecs: [
+        ['user.name', 'Auto', FilterOperator.Like],
+        ['user.number', '265112'],
+      ],
+    }).toString();
+
+    expect(result).toBe(
+      'filter[user.name][LIKE]=Auto%&filter[user.number][EQ]=265112',
+    );
+  });
+
+  it('should support inline sortBy(path, direction)', () => {
+    const result = new BasicFilter({
+      filterSpecs: FilterSpec.of(
+        ['user.name', 'Dino', FilterOperator.Like],
+        ['user.number', '14141'],
+      ),
+    })
+      .sortBy('user.name', SortDirection.DESC)
+      .toString();
+
+    expect(result).toBe(
+      'filter[user.name][LIKE]=Dino%&filter[user.number][EQ]=14141&sort=-user.name',
+    );
+  });
+
+  it('should support inline paginate(pageIndex, pageSize)', () => {
+    const result = new BasicFilter({
+      filterSpecs: FilterSpec.of(
+        ['user.name', 'Gustav', FilterOperator.Like],
+        ['user.number', '14123'],
+      ),
+      relatedResources: 'client',
+    })
+      .sortBy('client.name', SortDirection.DESC)
+      .paginate(0, 10)
+      .toString();
+
+    expect(result).toBe(
+      'include=client&filter[user.name][LIKE]=Gustav%&filter[user.number][EQ]=14123&sort=-client.name&page[limit]=10&page[offset]=0',
+    );
+  });
+
+  it('should support nullable via tuple definition', () => {
+    const result = new BasicFilter({
+      filterSpecs: FilterSpec.of(
+        ['user.name', 'Auto', FilterOperator.Like],
+        ['user.number', null, FilterOperator.Equals, true],
+        ['user.address', 'Strasse', FilterOperator.Like],
+        ['user.shortname', null, FilterOperator.Equals, false],
+      ),
+    }).toString();
+
+    expect(result).toBe(
+      'filter[user.name][LIKE]=Auto%&filter[user.number][EQ]=null&filter[user.address][LIKE]=Strasse%',
+    );
+  });
+
+  it('should combine all ergonomic features in a single chain', () => {
+    const result = new BasicFilter({
+      filterSpecs: FilterSpec.of(
+        ['user.name', 'Dino', FilterOperator.Like],
+        ['user.age', 25, FilterOperator.GreaterOrEquals],
+      ),
+      relatedResources: 'client',
+      sparseFieldsets: ['user.name', 'user.age'],
+    })
+      .sortBy('user.name', SortDirection.ASC)
+      .paginate(0, 20)
+      .toString();
+
+    expect(result).toBe(
+      'include=client&filter[user.name][LIKE]=Dino%&filter[user.age][GE]=25&fields=user.name,user.age&sort=user.name&page[limit]=20&page[offset]=0',
+    );
+  });
+});
+

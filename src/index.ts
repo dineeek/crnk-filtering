@@ -20,6 +20,7 @@ export { toQueryString } from './helpers';
 // Types
 export type {
   FilterValue,
+  FilterSpecDef,
   PageEvent,
   BasicQueryParams,
   NestedQueryParams,
