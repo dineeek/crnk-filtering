@@ -1,47 +1,71 @@
 {
   "name": "crnk-filtering",
-  "version": "3.3.0",
-  "author": "Dino Klicek",
-  "scripts": {
-    "test": "ng test --code-coverage",
-    "lint": "ng lint",
-    "build-crnk-filtering": "ng build crnk-filtering --prod",
-    "publish-crnk-filtering": "cd dist/crnk-filtering && npm publish --access=public",
-    "build-ci": "ng build crnk-filtering --prod",
-    "test-ci": "ng test crnk-filtering --watch=false --browsers=ChromeHeadless",
-    "coverage": "codecov --disable=gcov"
+  "version": "4.0.0",
+  "description": "Zero-dependency TypeScript library for generating CRNK / JSON:API filter, sort & pagination query strings",
+  "author": "Dino Klicek <dineeek@gmail.com>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dineeek/crnk-filtering"
   },
-  "private": true,
-  "dependencies": {
-    "@angular/animations": ">=6.0.0",
-    "@angular/cdk": ">=6.0.0",
-    "@angular/common": ">=6.0.0",
-    "@angular/compiler": ">=6.0.0",
-    "@angular/core": ">=6.0.0",
-    "@angular/forms": ">=6.0.0",
-    "@angular/material": ">=6.0.0",
-    "@angular/platform-browser": ">=6.0.0",
-    "@angular/platform-browser-dynamic": ">=6.0.0",
-    "zone.js": "~0.11.3"
+  "homepage": "https://github.com/dineeek/crnk-filtering#readme",
+  "bugs": {
+    "url": "https://github.com/dineeek/crnk-filtering/issues"
+  },
+  "keywords": [
+    "crnk",
+    "json-api",
+    "jsonapi",
+    "filtering",
+    "sorting",
+    "pagination",
+    "query",
+    "typescript"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"__tests__/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"__tests__/**/*.ts\"",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.1101.0-next.3",
-    "@angular/cli": ">=6.0.0",
-    "@angular/compiler-cli": ">=6.0.0",
-    "@types/jasmine": "~3.6.0",
-    "@types/node": "^12.11.1",
-    "codelyzer": "^6.0.0",
-    "jasmine-core": "~3.6.0",
-    "jasmine-spec-reporter": "~5.0.0",
-    "karma": "~5.2.0",
-    "karma-chrome-launcher": "~3.1.0",
-    "karma-coverage": "~2.0.3",
-    "karma-jasmine": "~4.0.0",
-    "karma-jasmine-html-reporter": "^1.5.0",
-    "ng-packagr": "^11.0.0",
-    "protractor": "~7.0.0",
-    "ts-node": "~8.3.0",
-    "tslint": "~6.1.0",
-    "typescript": ">=4.0.0 accepted  <4.1.0"
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.3.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.5.0",
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^2.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
