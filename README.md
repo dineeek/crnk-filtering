@@ -1,6 +1,6 @@
 # crnk-filtering
 
-Zero-dependency TypeScript library for generating [CRNK](https://www.crnk.io/) / [JSON:API](https://jsonapi.org/) filter, sort & pagination query strings.
+Zero-dependency TypeScript library for generating [CRNK](https://github.com/crnk-project/crnk-framework) / [JSON:API](https://jsonapi.org/) filter, sort & pagination query strings.
 
 Works with **any** HTTP client — Angular, fetch, Axios, etc.
 
@@ -11,12 +11,12 @@ Works with **any** HTTP client — Angular, fetch, Axios, etc.
 
 ## Features
 
-- [Basic filtering](https://www.crnk.io/releases/stable/documentation/#_basic_filtering)
-- [Nested filtering](https://www.crnk.io/releases/stable/documentation/#_nested_filtering)
-- [Sorting](https://www.crnk.io/releases/stable/documentation/#_sorting)
-- [Inclusion of Related Resources](https://www.crnk.io/releases/stable/documentation/#_inclusion_of_related_resources)
-- [Pagination](https://www.crnk.io/releases/stable/documentation/#_pagination) (framework-agnostic)
-- [Sparse fieldsets](https://www.crnk.io/releases/stable/documentation/#_sparse_fieldsets)
+- [Basic filtering](#basic-filtering)
+- [Nested filtering](#nested-filtering)
+- [Sorting](#sorting)
+- [Inclusion of Related Resources](#inclusion-of-related-resources)
+- [Pagination](#pagination) (framework-agnostic)
+- [Sparse fieldsets](#sparse-fieldsets)
 - Fluent method chaining
 - Zero runtime dependencies
 - ESM + CommonJS dual output

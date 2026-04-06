@@ -36,24 +36,24 @@
 
 #### Feats
 
-- [Sparse fieldsets] (https://www.crnk.io/releases/stable/documentation/#_sparse_fieldsets)
+- Sparse fieldsets
 
 ### 2.1.0
 
 #### Feats
 
-- [Pagination] (https://www.crnk.io/releases/stable/documentation/#_pagination)
+- Pagination
 
 ### 2.0.0
 
 #### Feats
 
-- [Sorting] (https://www.crnk.io/releases/stable/documentation/#_sorting)
-- [Inclusion of Related Resources] (https://www.crnk.io/releases/stable/documentation/#_inclusion_of_related_resources)
+- Sorting
+- Inclusion of Related Resources
 
 ### 1.0.0
 
 #### Feats
 
-- [Basic filtering] (https://www.crnk.io/releases/stable/documentation/#_basic_filtering)
-- [Nested filtering] (https://www.crnk.io/releases/stable/documentation/#_nested_filtering)
+- Basic filtering
+- Nested filtering
